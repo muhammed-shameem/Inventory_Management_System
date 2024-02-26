@@ -1,17 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{% block title %}Your Title{% endblock %}</title>
+    <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/landing_page.css' %}">
 </head>
 <body>
-    <header>
-        <h1>{% block header %}Your Header{% endblock %}</h1>
-    </header>
-    <div>
+    <div class="header">
+        {% block header %}Your Header{% endblock %}
+    </div>
+    <div class="content">
         {% block content %}{% endblock %}
     </div>
-    <footer>
-        <p>&copy; 2024 Your Company</p>
-    </footer>
 </body>
 </html>

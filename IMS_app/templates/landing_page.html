@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Inventory Management System{% endblock %}
 
-{% block header %}Welcome to Our Website{% endblock %}
+{% block header %}
+<div class="heading">
+    <a href="/home">Home</a>
+    <a href="/login">Login</a>
+</div>
+{% endblock %}
 
 {% block content %}
-    <p>This is the home page content.</p>
+    <div class="content-heading">Inventory Management System</div>
 {% endblock %}
