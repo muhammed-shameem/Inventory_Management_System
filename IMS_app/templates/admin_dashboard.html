@@ -10,11 +10,42 @@
 {% block header %}
   <div class="heading">
     <h1>Admin Dashboard</h1>
+    <div class="inner">
+        <a href="/ims/dashboard" class="link">Inventory</a>
+        <a href="/ims/products" class="link">Products</a>
+    </div>
+    <div class="inner">
+        <a href="{% url 'logout' %}" class="link">Logout</a>
+    </div>
   </div>
 {% endblock %}
 
 {% block content %}
   <div class="main-content">
-    
+    <div class="filter-box">
+        <div>Search box</div>
+        <h2>Inventory List</h2>
+        <div>
+            <span>Filter Options</span>
+            <button class="btn">Add Inventory</button>
+        </div>
+    </div>
+    <div class="card-container">
+      {% for inventory in inventory_list %}
+        <div class="item-card">
+            <img src="{% static 'images/no-image.png' %}" alt="{{ inventory.product.name }}" />
+            <div><span class="bold">{{ inventory.product.name }}</span> </div>
+            <div><span class="bold">Rs: </span>{{ inventory.selling_unit_price }} </div>
+            <div><span class="bold">Stock: </span>{{ inventory.stock }}</div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
+  <script>
+    $(document).ready(function() {
+        var currentPath = window.location.pathname;
+        console.log("current path : ",currentPath)
+        $('a[href="' + currentPath + '"]').addClass('active');
+    });
+</script>
 {% endblock %}
