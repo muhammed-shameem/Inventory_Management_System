@@ -4,7 +4,7 @@
 <head>
     <title>{% block title %}Home{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/landing_page.css' %}">
+    {% block meta %}{% endblock %}
 </head>
 <body>
     <div class="header">

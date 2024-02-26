@@ -1,0 +1,44 @@
+.main-content{
+    width:100%;
+    min-height: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-content form {
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 20px;
+    min-height: 200px;
+    width: 350px;
+}
+
+
+.main-content form label {
+    display: block;
+    width:79px;
+    width:100%;
+    color: black;
+}
+
+.main-content form  input {
+    width:100%;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.main-content form  ul {
+    margin-top: 20px;
+    padding: 0px;
+    padding-left: 20px;
+    color: red;
+}
+
+.login-btn{
+    background-color: black;
+    color: #ffffff;
+    width:100%;
+    margin-top: 10px;
+}
