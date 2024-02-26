@@ -28,4 +28,4 @@ class Inventory(models.Model):
     stock = models.IntegerField()
 
     def __str__(self):
-        return f"{self.product.name} Inventory"
+        return f"{self.product.name} (Inventory)"
