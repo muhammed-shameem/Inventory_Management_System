@@ -26,6 +26,10 @@
           <a href="/ims/reports" class="link">Reports</a>
         </div>
         <div class="inner">
+          {% if user.is_authenticated %}
+            <span>Hi, {{ user.username }}!</span>
+          {% endif %}
+
           <a href="#" id="logoutBtn" data-toggle="modal" data-target="#logoutModal" data-logout-url="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
       </div>
@@ -56,7 +60,6 @@
       </div>
     </div>
   </body>
-
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
