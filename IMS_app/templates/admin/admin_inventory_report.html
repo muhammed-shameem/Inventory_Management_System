@@ -12,12 +12,12 @@
   <div class="main-content">
     <div class="filter-box">
       <div class="d-flex align-items-center gap-20">
-        <form method="get" action="{% url 'supplier_dashboard' %}">
-          <input type="text" name="search" placeholder="Search products..." value="{{ search_query }}" />
+        <form method="get" action="{% url 'inventory_report' %}">
+          <input type="text" name="search" placeholder="Search product,desc,supplier" value="{{ search_query }}" />
           <button type="submit" class="btn-dark">Search</button>
         </form>
         {% if search_query %}
-          <button id="clear" class="btn-light btn-outline-secondary ml-2" data-url-id="{% url 'supplier_dashboard' %}">Clear</button>
+          <button id="clear" class="btn-light btn-outline-secondary ml-2" data-url-id="{% url 'inventory_report' %}">Clear</button>
         {% endif %}
       </div>
       <h2>Inventory Report</h2>

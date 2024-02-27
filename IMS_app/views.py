@@ -179,6 +179,16 @@ class InventoryReportView(AdminLoginMixin, TemplateView):
             sort_by = self.request.GET.get('sort_by')
             if sort_by:
                 queryset = queryset.order_by(sort_by)
+                
+            search_query = self.request.GET.get('search', '')
+            if search_query:
+                queryset = queryset.filter(
+                    Q(product__name__icontains=search_query)
+                    | Q(product__description__icontains=search_query)
+                    | Q(product__supplier__user__username=search_query)
+                    )
+                
+            context['search_query'] = search_query
 
             context['inventory'] = queryset
 
