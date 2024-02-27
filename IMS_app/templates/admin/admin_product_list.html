@@ -5,14 +5,14 @@
   <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_product_list.css' %}" />
 {% endblock %}
 {% block title %}
-  Admin Dashboard
+  Admin Products List
 {% endblock %}
 
 {% block content %}
   <div class="main-content">
     <div class="filter-box">
       <div>Search box</div>
-      <h2>Product List</h2>
+      <h2>Products List</h2>
       <div></div>
     </div>
     <div class="card-container">
@@ -43,7 +43,7 @@
               {% endif %}
             </div>
             <div>
-              <button class="btn purchase-btn" data-product-id="{{ product.id }}" {% if not product.active_status or product.stock == 0 %}disabled{% endif %}>Purchase</button>
+              <button id="purchaseBtn" class="btn purchase-btn" data-product-id="{{ product.id }}" {% if not product.active_status or product.stock == 0 %}disabled{% endif %}>Purchase</button>
             </div>
           </div>
         {% endfor %}
@@ -54,7 +54,7 @@
   </div>
   <script>
     $(document).ready(function () {
-      $('.purchase-btn').on('click', function () {
+      $('#purchaseBtn').on('click', function () {
         var productId = $(this).data('product-id')
         var purchaseUrl = '/ims/purchase/' + productId
     

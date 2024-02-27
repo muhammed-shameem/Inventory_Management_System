@@ -1,0 +1,65 @@
+{% extends 'admin/admin_dashboard_base.html' %}
+{% load static %}
+{% block meta %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_product_list.css' %}" />
+{% endblock %}
+{% block title %}
+  Admin Suppliers List
+{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <div class="filter-box">
+      <div>Search box</div>
+      <h2>Suppliers List</h2>
+      <div>
+        <button id="addNewSupplierBtn" class="btn">Add New Supplier</button>
+      </div>
+    </div>
+    <div class="card-container">
+      {% if suppliers_list %}
+        {% for supplier in suppliers_list %}
+          <div class="item-card" id="supplierCard">
+            <img src="{% static 'images/default-avatar.png' %}" alt="{{ supplier.user.username }}" />
+            <div>
+              <span class="bold">{{ supplier.user.username }}</span>
+            </div>
+            <div>
+              <span class="bold">First Name:&nbsp;</span>{{ supplier.user.first_name }}
+            </div>
+            <div>
+              <span class="bold">Last Name:&nbsp;</span>{{ supplier.user.last_name }}
+            </div>
+            <div>
+              <span class="bold">Status:&nbsp;</span>{% if supplier.user.is_active %}
+                Enabled
+              {% else %}
+                Disabled
+              {% endif %}
+            </div>
+            <div>
+              <button id="viewSupplierBtn" class="btn supplier-btn" data-supplier-id="{{ supplier.id }}">View full profile</button>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-status">No registered suppliers.</div>
+      {% endif %}
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      $('#viewSupplierBtn').on('click', function () {
+        var supplierId = $(this).data('supplier-id')
+        var suppliereUrl = '/ims/supplier/' + supplierId
+    
+        window.location.href = suppliereUrl
+      })
+    
+      $('#addNewSupplierBtn').on('click', function () {
+        window.location.href = '/ims/supplier/add'
+      })
+    })
+  </script>
+{% endblock %}
