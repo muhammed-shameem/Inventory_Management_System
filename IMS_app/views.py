@@ -59,6 +59,8 @@ class ProductPurchaseView(AdminLoginMixin, View):
             
             with transaction.atomic():
                 product.stock -= intake_stock
+                if product.stock == 0:
+                    product.active_status = False
                 product.save()
                 inventory_entry = Inventory.objects.filter(product=product).first()
                 if inventory_entry:
