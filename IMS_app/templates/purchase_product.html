@@ -1,23 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'admin_dashboard_base.html' %}
 {% load static %}
 {% block meta %}
   <link rel="stylesheet" type="text/css" href="{% static 'css/admin_dashboard.css' %}" />
 {% endblock %}
 {% block title %}
-  Admin Dashboard
-{% endblock %}
-
-{% block header %}
-  <div class="heading">
-    <h1>Admin Dashboard</h1>
-    <div class="inner">
-      <a href="/ims/dashboard" class="link">Inventory</a>
-      <a href="/ims/products" class="link">Products</a>
-    </div>
-    <div class="inner">
-      <a href="{% url 'logout' %}" class="link">Logout</a>
-    </div>
-  </div>
+  Admin Purchase Product
 {% endblock %}
 
 {% block content %}
@@ -64,9 +51,6 @@
   </div>
   <script>
     $(document).ready(function () {
-      var currentPath = window.location.pathname
-      $('a[href="' + currentPath + '"]').addClass('active')
-
       var initialIntakeStockValue = $('#intakeStockInput').val();
       var maxStockValue = parseInt($('#intakeStockInput').attr('max'));
 

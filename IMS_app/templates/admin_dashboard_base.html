@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      {% block title %}
+        Home
+      {% endblock %}
+    </title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block meta %}
+    {% endblock %}
+  </head>
+  <body>
+    <div class="header">
+      <div class="heading">
+        <h1>Admin Dashboard</h1>
+        <div class="inner">
+          <a href="/ims/dashboard" class="link">Inventory</a>
+          <a href="/ims/products" class="link">Products</a>
+        </div>
+        <div class="inner">
+          <a href="{% url 'logout' %}" class="link">Logout</a>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
+  <script>
+    $(document).ready(function () {
+      var currentPath = window.location.pathname
+      console.log('current path : ', currentPath)
+      $('a[href="' + currentPath + '"]').addClass('active')
+    })
+  </script>
+</html>
