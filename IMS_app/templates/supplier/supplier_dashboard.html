@@ -11,7 +11,15 @@
 {% block content %}
   <div class="main-content">
     <div class="filter-box">
-      <div>Search box</div>
+      <div class="d-flex align-items-center gap-20">
+        <form method="get" action="{% url 'supplier_dashboard' %}">
+          <input type="text" name="search" placeholder="Search products..." value="{{ search_query }}" />
+          <button type="submit" class="btn-dark">Search</button>
+        </form>
+        {% if search_query %}
+          <button id="clear" class="btn-light btn-outline-secondary ml-2" data-url-id="{% url 'supplier_dashboard' %}">Clear</button>
+        {% endif %}
+      </div>
       <h2>My Products</h2>
       <div>
         <a href="/supplier/add-product" class="anchor-button">Add New Product</a>
@@ -20,7 +28,7 @@
     <div class="card-container">
       {% if products_list %}
         {% for product in products_list %}
-          <div class="item-card {% if product.stock < 20 and product.stock > 4 %}low-stock{% endif %} {% if product.stock < 5 and product.stock > 0 %}very-low-stock{% endif %}" id="productCard">
+          <div class="item-card {% if product.stock < 20 and product.stock > 4 %}{% endif %} {% if product.stock < 5 and product.stock > 0 %}{% endif %}" id="productCard">
             <img src="{% static 'images/no-image.png' %}" alt="{{ product.name }}" />
             <div>
               <span class="bold">{{ product.name }}</span>
@@ -36,7 +44,7 @@
             </div>
             <div>
               <span class="bold">Status:&nbsp;</span>{% if product.active_status %}
-                 Available
+                Available
               {% else %}
                 Not Available
               {% endif %}
@@ -55,9 +63,14 @@
     $(document).ready(function () {
       $('.edit-btn').on('click', function () {
         var productId = $(this).data('product-id')
-        var purchaseUrl = '/supplier/product/' + productId +'/edit'
+        var purchaseUrl = '/supplier/product/' + productId + '/edit'
     
         window.location.href = purchaseUrl
+      })
+    
+      $('#clear').on('click', function () {
+        var clearUrl = $(this).data('url-id')
+        window.location.href = clearUrl
       })
     })
   </script>

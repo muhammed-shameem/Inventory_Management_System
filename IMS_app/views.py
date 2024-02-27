@@ -1,5 +1,6 @@
 import csv
 from django.db import transaction
+from django.db.models import Q
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic.edit import UpdateView,DeleteView
 from django.views.generic import TemplateView, CreateView
@@ -167,7 +168,13 @@ class SupplierDashboardView(SupplierLoginMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         supplier = self.request.user.supplier
         products = Product.objects.filter(supplier=supplier)
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            products = products.filter(
+                Q(name__icontains=search_query) | Q(description__icontains=search_query)
+            )
         context['products_list'] = products
+        context ['search_query'] = search_query
         return context
 
 
