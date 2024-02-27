@@ -14,8 +14,7 @@
       <div>Search box</div>
       <h2>Inventory Report</h2>
       <div>
-        {% comment %} <span>Filter Options</span>
-        <button id="addNewItemBtn" class="btn">Add New Item</button> {% endcomment %}
+        <a href="{% url 'export_inventory_report' %}" class="anchor-button">Export to CSV</a>
       </div>
     </div>
     <div class="table-container">

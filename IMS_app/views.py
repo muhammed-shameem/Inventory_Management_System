@@ -1,9 +1,12 @@
+import csv
 from django.views.generic import TemplateView
 from django.db import transaction
 from django.contrib.auth.views import LoginView,LogoutView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.urls import reverse_lazy
+from django.contrib import messages
+from django.http import HttpResponse
 from .models import Inventory,Product,Supplier
 from .mixins import AdminLoginMixin,SupplierLoginMixin
 from .forms import InventorySearchForm
@@ -99,7 +102,6 @@ class InventoryReportView(AdminLoginMixin,TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Apply advanced filtering
         form = InventorySearchForm(self.request.GET)
         if form.is_valid():
             product_name = form.cleaned_data.get('product_name')
@@ -118,7 +120,6 @@ class InventoryReportView(AdminLoginMixin,TemplateView):
             if quantity_max:
                 queryset = queryset.filter(stock_quantity__lte=quantity_max)
 
-            # Dynamic sorting by various fields
             sort_by = self.request.GET.get('sort_by')
             if sort_by:
                 queryset = queryset.order_by(sort_by)
@@ -127,6 +128,22 @@ class InventoryReportView(AdminLoginMixin,TemplateView):
 
         context['form'] = form
         return context
+        
+    
+def export_csv(request):
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="inventory_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Product Name', 'Supplier', 'Purchase Price', 'Selling Price', 'Quantity'])
+    
+    queryset = Inventory.objects.all()
+    for inventory in queryset:
+            writer.writerow([inventory.product.name, inventory.product.supplier.user.username, inventory.product.unit_price, inventory.selling_unit_price,inventory.stock])  # Adjust fields as needed
+
+
+    return response
     
 class SupplierDashboardView(SupplierLoginMixin,TemplateView):
     template_name = 'supplier_dashboard.html'
