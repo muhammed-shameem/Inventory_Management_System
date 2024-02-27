@@ -278,3 +278,9 @@ input[type='password']::-ms-clear {
   text-align: center;
   color:red
 }
+
+.anchor-button{
+  background-color: black;
+  color: #ffffff;
+  padding: 10px 20px;
+}

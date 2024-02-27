@@ -74,7 +74,7 @@
               {% endif %}
             </div>
             <div>
-              <button id="purchaseBtn" class="btn purchase-btn" data-product-id="{{ product.id }}" {% if not product.active_status or product.stock == 0 %}disabled{% endif %}>Purchase</button>
+              <button id="purchaseBtn" class="btn btn-dark purchase-btn" data-product-id="{{ product.id }}" {% if not product.active_status or product.stock == 0 %}disabled{% endif %}>Purchase</button>
             </div>
           </div>
         {% endfor %}

@@ -1,0 +1,27 @@
+.form {
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 20px;
+    min-height: 200px;
+    width: 440px;
+}
+
+.form label {
+    display: block;
+    width:79px;
+    width:100%;
+    color: black;
+}
+
+.form  input {
+    width:100%;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.form  ul {
+    margin-top: 20px;
+    padding: 0px;
+    padding-left: 20px;
+    color: red;
+}

@@ -42,7 +42,7 @@
           <label for="intake_stock bold">Purchasing Quantity(max:{{ product.stock }})</label>
           <input name="stock" type="number" min="1" max="{{ product.stock }}" id="intakeStockInput" />
         </div>
-        <button class="btn" type="submit" id="purchaseBtn">Purchase</button>
+        <button class="btn btn-dark" type="submit" id="purchaseBtn">Purchase</button>
         {% if error %}
         <div class="error-section">{{error}}</div>
         {% endif %}
