@@ -24,7 +24,7 @@ class CustomLogoutView(LogoutView):
     next_page = reverse_lazy('login')
                         
 class AdminDashboardView(AdminLoginMixin,TemplateView):
-    template_name = 'admin_dashboard.html'
+    template_name = 'admin/admin_dashboard.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -33,7 +33,7 @@ class AdminDashboardView(AdminLoginMixin,TemplateView):
         return context
     
 class AdminDashboardProductsView(AdminLoginMixin,TemplateView):
-    template_name = 'admin_product_list.html'
+    template_name = 'admin/admin_product_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,7 +42,7 @@ class AdminDashboardProductsView(AdminLoginMixin,TemplateView):
         return context
     
 class AdminDashboardSuppliersView(AdminLoginMixin,TemplateView):
-    template_name = 'admin_suppliers.html'
+    template_name = 'admin/admin_suppliers.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -50,7 +50,7 @@ class AdminDashboardSuppliersView(AdminLoginMixin,TemplateView):
         context['suppliers_list'] = suppliers_list
         return context
 class ProductPurchaseView(AdminLoginMixin, View):
-    template_name = 'purchase_product.html'
+    template_name = 'admin/purchase_product.html'
 
     def get(self, request, product_id):
         product = get_object_or_404(Product, pk=product_id)
