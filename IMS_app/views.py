@@ -4,7 +4,7 @@ from django.contrib.auth.views import LoginView,LogoutView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.urls import reverse_lazy
-from .models import Inventory,Product
+from .models import Inventory,Product,Supplier
 from .mixins import AdminLoginMixin,SupplierLoginMixin
 
 class LandingView(TemplateView):
@@ -39,6 +39,15 @@ class AdminDashboardProductsView(AdminLoginMixin,TemplateView):
         context = super().get_context_data(**kwargs)
         product_list = Product.objects.all()
         context['product_list'] = product_list
+        return context
+    
+class AdminDashboardSuppliersView(AdminLoginMixin,TemplateView):
+    template_name = 'admin_suppliers.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        suppliers_list = Supplier.objects.all()
+        context['suppliers_list'] = suppliers_list
         return context
 class ProductPurchaseView(AdminLoginMixin, View):
     template_name = 'purchase_product.html'
