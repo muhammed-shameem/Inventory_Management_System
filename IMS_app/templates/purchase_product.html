@@ -36,16 +36,29 @@
           <span class="bold">Description</span> : {{ product.description }}
         </div>
         <div>
-          <span class="bold">Available Stock</span> : {{ product.stock }}
+          <span class="bold">Rs:&nbsp;</span>{{ product.unit_price }}
         </div>
         <div>
           <span class="bold">Supplier</span> : <a href="/ims/supplier/{{ product.supplier.user.id }}">{{ product.supplier.user.username }}</a>
+        </div>
+        <div>
+          <span class="bold">Available Stock</span> : {{ product.stock }}
+        </div>
+        <div>
+          <span class="bold">Status:&nbsp;</span>{% if product.active_status %}
+             Available
+          {% else %}
+            Not Available
+          {% endif %}
         </div>
         <div class="purchase-quantity">
           <label for="intake_stock bold">Purchasing Quantity(max:{{ product.stock }})</label>
           <input name="stock" type="number" min="1" max="{{ product.stock }}" id="intakeStockInput" />
         </div>
         <button class="btn" type="submit" id="purchaseBtn">Purchase</button>
+        {% if error %}
+        <div class="error-section">{{error}}</div>
+        {% endif %}
       </form>
     </div>
   </div>

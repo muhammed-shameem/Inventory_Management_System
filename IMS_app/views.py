@@ -52,6 +52,8 @@ class ProductPurchaseView(AdminLoginMixin, View):
         intake_stock=request.POST.get('stock')
         if intake_stock:
             intake_stock = int(intake_stock)
+            if not product.active_status:
+                return render(request, self.template_name, {'product': product, 'error': "The Product is not available"})
             if product.stock < intake_stock:
                 return render(request, self.template_name, {'product': product, 'error': "Not enough stock available"})
             

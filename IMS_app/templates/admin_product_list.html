@@ -31,10 +31,13 @@
     <div class="card-container">
       {% if product_list %}
         {% for product in product_list %}
-          <div class="item-card {% if product.stock < 20 %}{% endif %} {% if product.stock < 5 %}{% endif %}" id="productCard">
+          <div class="item-card {% if product.stock < 20 and product.stock > 4 %}low-stock{% endif %} {% if product.stock < 5 and product.stock > 0 %}very-low-stock{% endif %}" id="productCard">
             <img src="{% static 'images/no-image.png' %}" alt="{{ product.name }}" />
             <div>
               <span class="bold">{{ product.name }}</span>
+            </div>
+            <div>
+              <span class="bold">Description:&nbsp;</span>{{ product.description }}
             </div>
             <div>
               <span class="bold">Rs:&nbsp;</span>{{ product.unit_price }}

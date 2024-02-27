@@ -266,3 +266,11 @@ input[type='password']::-ms-clear {
   font-weight: 500;
   color: red;
 }
+
+
+.error-section{
+  margin-top: 10px;
+  width:100%;
+  text-align: center;
+  color:red
+}
