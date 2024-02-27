@@ -1,0 +1,60 @@
+{% extends 'admin/admin_dashboard_base.html' %}
+{% load static %}
+{% block meta %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/inventory_report.css' %}" />
+{% endblock %}
+{% block title %}
+  Admin Inventory Report
+{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <div class="filter-box">
+      <div>Search box</div>
+      <h2>Inventory Report</h2>
+      <div>
+        {% comment %} <span>Filter Options</span>
+        <button id="addNewItemBtn" class="btn">Add New Item</button> {% endcomment %}
+      </div>
+    </div>
+    <div class="table-container">
+      {% if inventory %}
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>
+                <a href="?sort_by=product__name">Product Name</a>
+              </th>
+              <th>
+                <a href="?sort_by=product__supplier__user__username">Supplier</a>
+              </th>
+              <th>
+                <a href="?sort_by=product__unit_price">Purchase Price</a>
+              </th>
+              <th>
+                <a href="?sort_by=selling_unit_price">Selling Price</a>
+              </th>
+              <th>
+                <a href="?sort_by=stock">Stock</a>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in inventory %}
+              <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.supplier.user.username }}</td>
+                <td>{{ item.product.unit_price }}</td>
+                <td>{{ item.selling_unit_price }}</td>
+                <td>{{ item.stock }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="empty-status">No inventory available.</div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

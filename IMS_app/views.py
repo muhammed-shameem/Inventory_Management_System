@@ -6,6 +6,7 @@ from django.views import View
 from django.urls import reverse_lazy
 from .models import Inventory,Product,Supplier
 from .mixins import AdminLoginMixin,SupplierLoginMixin
+from .forms import InventorySearchForm
 
 class LandingView(TemplateView):
     template_name = 'landing_page.html'
@@ -91,6 +92,41 @@ class AdminDashboardSupplierDetailView(AdminLoginMixin,TemplateView):
         supplier = get_object_or_404(Supplier, pk=supplier_id)
         products = Product.objects.filter(supplier=supplier)
         return render(request, self.template_name, {'supplier': supplier,'products':products})
+    
+class InventoryReportView(AdminLoginMixin,TemplateView):
+    template_name = 'admin/admin_inventory_report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Apply advanced filtering
+        form = InventorySearchForm(self.request.GET)
+        if form.is_valid():
+            product_name = form.cleaned_data.get('product_name')
+            supplier_name = form.cleaned_data.get('supplier_name')
+            quantity_min = form.cleaned_data.get('quantity_min')
+            quantity_max = form.cleaned_data.get('quantity_max')
+
+            queryset = Inventory.objects.all()
+
+            if product_name:
+                queryset = queryset.filter(product__name__icontains=product_name)
+            if supplier_name:
+                queryset = queryset.filter(product__supplier__name__icontains=supplier_name)
+            if quantity_min:
+                queryset = queryset.filter(stock_quantity__gte=quantity_min)
+            if quantity_max:
+                queryset = queryset.filter(stock_quantity__lte=quantity_max)
+
+            # Dynamic sorting by various fields
+            sort_by = self.request.GET.get('sort_by')
+            if sort_by:
+                queryset = queryset.order_by(sort_by)
+
+            context['inventory'] = queryset
+
+        context['form'] = form
+        return context
     
 class SupplierDashboardView(SupplierLoginMixin,TemplateView):
     template_name = 'supplier_dashboard.html'
