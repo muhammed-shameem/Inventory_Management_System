@@ -162,6 +162,12 @@ input[type='password']::-ms-clear {
     background-color: black;
     color: #ffffff;
     cursor: pointer;
+    width:100%;
+}
+
+.btn:disabled{
+  background-color: grey;
+  cursor: auto;
 }
 
 .card-container{
@@ -173,7 +179,8 @@ input[type='password']::-ms-clear {
 .item-card{
   padding:10px;
   width:250px;
-  height:300px;
+  min-height:300px;
+  height:auto;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
@@ -183,6 +190,7 @@ input[type='password']::-ms-clear {
 .item-card img {
   flex:2.5;
   width:100%;
+  margin-bottom: 20px;
 }
 
 .item-card div {
@@ -190,6 +198,43 @@ input[type='password']::-ms-clear {
   width:100%;
 }
 
-.item-card div .bold {
+.bold {
   font-weight: 600;
+}
+
+.form-container{
+  margin-top: 50px;
+  width:100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-form{
+  border-radius: 5px;
+  padding: 20px;
+  min-height: 200px;
+  width: 350px;
+  border: 2px solid black;
+}
+
+.form-img{
+  width:100%
+}
+
+.purchase-quantity{
+  width:100%;
+  margin-top: 30px;
+}
+
+.purchase-quantity label{
+  width:100%;
+  display: block;
+  font-weight: 600;
+}
+
+.purchase-quantity input{
+  width:100%;
+  display: block;
+  margin-bottom: 20px;
 }
