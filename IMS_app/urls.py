@@ -15,4 +15,6 @@ urlpatterns = [
     path('ims/reports/export/', views.export_csv, name='export_inventory_report'),
     path('supplier/dashboard', views.SupplierDashboardView.as_view(), name='supplier_dashboard'),
     path('supplier/add-product', views.AddProductView.as_view(), name='add_product'),
+    path('supplier/product/<int:pk>/edit', views.EditProductView.as_view(), name='edit_product'),
+    path('supplier/product/<int:pk>/delete', views.ProductDeleteView.as_view(), name='delete_product'),
 ]

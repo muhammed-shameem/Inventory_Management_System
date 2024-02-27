@@ -1,15 +1,16 @@
 import csv
-from django.views.generic import TemplateView, CreateView
 from django.db import transaction
 from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic.edit import UpdateView,DeleteView
+from django.views.generic import TemplateView, CreateView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Inventory, Product, Supplier
 from .mixins import AdminLoginMixin, SupplierLoginMixin
-from .forms import InventorySearchForm, ProductForm
+from .forms import InventorySearchForm, ProductForm ,EditProductForm
 
 
 class LandingView(TemplateView):
@@ -186,6 +187,28 @@ class AddProductView(SupplierLoginMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('supplier_dashboard')
+    
+class EditProductView(SupplierLoginMixin, UpdateView):
+    model = Product
+    form_class = EditProductForm
+    template_name = 'supplier/edit_product.html'
+    success_url = reverse_lazy('supplier_dashboard')
+
+    def form_valid(self, form):
+        if form.instance.supplier.user != self.request.user:
+            return HttpResponseForbidden("You are not authorized to edit this product.")
+        return super().form_valid(form)
+    
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'supplier/edit_product.html' 
+    success_url = reverse_lazy('supplier_dashboard')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        response_data = {'result': 'success', 'message': 'Product deleted successfully.'}
+        return JsonResponse(response_data)
 
 
 def export_csv(request):

@@ -19,6 +19,12 @@
     margin-bottom: 10px;
 }
 
+.active_status{
+    width: auto !important;
+    display: inline !important;
+    margin-bottom: 10px;
+}
+
 .form  ul {
     margin-top: 20px;
     padding: 0px;

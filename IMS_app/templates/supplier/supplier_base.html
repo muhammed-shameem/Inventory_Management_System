@@ -20,7 +20,9 @@
     <div class="header">
       <div class="heading">
         <h1>Supplier Dashboard</h1>
-        <div class="inner"></div>
+        <div class="inner">
+          <a href="/supplier/dashboard" class="link">Products</a>
+        </div>
         <div class="inner">
           {% if user.is_authenticated %}
             <span>Hi, {{ user.username }}!</span>

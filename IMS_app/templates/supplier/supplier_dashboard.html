@@ -5,7 +5,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_product_list.css' %}" />
 {% endblock %}
 {% block title %}
-  Admin Products List
+  Supplier Dashboard
 {% endblock %}
 
 {% block content %}
@@ -55,7 +55,7 @@
     $(document).ready(function () {
       $('.edit-btn').on('click', function () {
         var productId = $(this).data('product-id')
-        var purchaseUrl = '/supplier/' + productId +'/edit'
+        var purchaseUrl = '/supplier/product/' + productId +'/edit'
     
         window.location.href = purchaseUrl
       })
