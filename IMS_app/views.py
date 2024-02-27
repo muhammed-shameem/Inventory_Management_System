@@ -84,6 +84,13 @@ class ProductPurchaseView(AdminLoginMixin, View):
 
         return render(request, self.template_name, {'product': product, 'error': "Stock missing in form"})
 
+class AdminDashboardSupplierDetailView(AdminLoginMixin,TemplateView):
+    template_name = 'admin/admin_supplier_detail.html'
+
+    def get(self, request, supplier_id):
+        supplier = get_object_or_404(Supplier, pk=supplier_id)
+        products = Product.objects.filter(supplier=supplier)
+        return render(request, self.template_name, {'supplier': supplier,'products':products})
     
 class SupplierDashboardView(SupplierLoginMixin,TemplateView):
     template_name = 'supplier_dashboard.html'

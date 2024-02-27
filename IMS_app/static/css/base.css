@@ -67,6 +67,10 @@ h6 {
   overflow-wrap: break-word;
 }
 
+h2,h3{
+  text-decoration: underline;
+}
+
 a {
   text-decoration: none;
 }

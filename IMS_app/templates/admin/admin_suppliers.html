@@ -13,9 +13,7 @@
     <div class="filter-box">
       <div>Search box</div>
       <h2>Suppliers List</h2>
-      <div>
-        <button id="addNewSupplierBtn" class="btn">Add New Supplier</button>
-      </div>
+      <div></div>
     </div>
     <div class="card-container">
       {% if suppliers_list %}
@@ -23,7 +21,7 @@
           <div class="item-card" id="supplierCard">
             <img src="{% static 'images/default-avatar.png' %}" alt="{{ supplier.user.username }}" />
             <div>
-              <span class="bold">{{ supplier.user.username }}</span>
+              <span class="bold">Username : </span>{{ supplier.user.username }}
             </div>
             <div>
               <span class="bold">First Name:&nbsp;</span>{{ supplier.user.first_name }}
@@ -39,7 +37,7 @@
               {% endif %}
             </div>
             <div>
-              <button id="viewSupplierBtn" class="btn supplier-btn" data-supplier-id="{{ supplier.id }}">View full profile</button>
+              <button id="viewSupplierBtn" class="btn viewSupplierBtn" data-supplier-id="{{ supplier.pk }}">View full profile</button>
             </div>
           </div>
         {% endfor %}
@@ -50,16 +48,11 @@
   </div>
   <script>
     $(document).ready(function () {
-      $('#viewSupplierBtn').on('click', function () {
-        var supplierId = $(this).data('supplier-id')
-        var suppliereUrl = '/ims/supplier/' + supplierId
-    
-        window.location.href = suppliereUrl
-      })
-    
-      $('#addNewSupplierBtn').on('click', function () {
-        window.location.href = '/ims/supplier/add'
-      })
+      $('.viewSupplierBtn').on('click', function () {
+        var supplierId = $(this).data('supplier-id');
+        var supplierUrl = '/ims/supplier/' + supplierId;
+        window.location.href = supplierUrl;
+    });
     })
   </script>
 {% endblock %}
