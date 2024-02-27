@@ -11,7 +11,15 @@
 {% block content %}
   <div class="main-content">
     <div class="filter-box">
-      <div>Search box</div>
+      <div class="d-flex align-items-center gap-20">
+        <form method="get" action="{% url 'supplier_dashboard' %}">
+          <input type="text" name="search" placeholder="Search products..." value="{{ search_query }}" />
+          <button type="submit" class="btn-dark">Search</button>
+        </form>
+        {% if search_query %}
+          <button id="clear" class="btn-light btn-outline-secondary ml-2" data-url-id="{% url 'supplier_dashboard' %}">Clear</button>
+        {% endif %}
+      </div>
       <h2>Inventory Report</h2>
       <div>
         <a href="{% url 'export_inventory_report' %}" class="anchor-button">Export to CSV</a>

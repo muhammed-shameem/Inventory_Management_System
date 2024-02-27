@@ -73,6 +73,12 @@
         var logoutUrl = $(this).data('logout-url')
         $('#confirmLogoutBtn').attr('href', logoutUrl)
       })
+
+      $('#clear').on('click', function () {
+        var clearUrl = $(this).data('url-id')
+        window.location.href = clearUrl
+      })
+      
     })
   </script>
 </html>

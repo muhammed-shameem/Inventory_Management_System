@@ -11,7 +11,15 @@
 {% block content %}
   <div class="main-content">
     <div class="filter-box">
-      <div>Search box</div>
+      <div class="d-flex align-items-center gap-20">
+        <form method="get" action="{% url 'admin_dashboard_suppliers' %}">
+          <input type="text" name="search" placeholder="Search username,firstname..." value="{{ search_query }}" />
+          <button type="submit" class="btn-dark">Search</button>
+        </form>
+        {% if search_query %}
+          <button id="clear" class="btn-light btn-outline-secondary ml-2" data-url-id="{% url 'admin_dashboard_suppliers' %}">Clear</button>
+        {% endif %}
+      </div>
       <h2>Suppliers List</h2>
       <div></div>
     </div>

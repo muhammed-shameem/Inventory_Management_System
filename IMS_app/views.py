@@ -2,7 +2,7 @@ import csv
 from django.db import transaction
 from django.db.models import Q
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic.edit import UpdateView,DeleteView
+from django.views.generic.edit import UpdateView, DeleteView
 from django.views.generic import TemplateView, CreateView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from .models import Inventory, Product, Supplier
 from .mixins import AdminLoginMixin, SupplierLoginMixin
-from .forms import InventorySearchForm, ProductForm ,EditProductForm
+from .forms import InventorySearchForm, ProductForm, EditProductForm
 
 
 class LandingView(TemplateView):
@@ -39,7 +39,15 @@ class AdminDashboardView(AdminLoginMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         inventory_list = Inventory.objects.all()
+
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            inventory_list = inventory_list.filter(
+                Q(product__name__icontains=search_query)
+                | Q(product__description__icontains=search_query))
+
         context['inventory_list'] = inventory_list
+        context['search_query'] = search_query
         return context
 
 
@@ -49,7 +57,16 @@ class AdminDashboardProductsView(AdminLoginMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product_list = Product.objects.all()
+
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            product_list = product_list.filter(
+                Q(name__icontains=search_query)
+                | Q(description__icontains=search_query)
+                | Q(supplier__user__username__icontains=search_query))
+
         context['product_list'] = product_list
+        context['search_query'] = search_query
         return context
 
 
@@ -59,7 +76,15 @@ class AdminDashboardSuppliersView(AdminLoginMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         suppliers_list = Supplier.objects.all()
+        
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            suppliers_list = suppliers_list.filter(
+                Q(user__username__icontains=search_query)
+                | Q(user__first_name__icontains=search_query))
+            
         context['suppliers_list'] = suppliers_list
+        context['search_query'] = search_query
         return context
 
 
@@ -171,10 +196,10 @@ class SupplierDashboardView(SupplierLoginMixin, TemplateView):
         search_query = self.request.GET.get('search', '')
         if search_query:
             products = products.filter(
-                Q(name__icontains=search_query) | Q(description__icontains=search_query)
-            )
+                Q(name__icontains=search_query)
+                | Q(description__icontains=search_query))
         context['products_list'] = products
-        context ['search_query'] = search_query
+        context['search_query'] = search_query
         return context
 
 
@@ -194,7 +219,8 @@ class AddProductView(SupplierLoginMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('supplier_dashboard')
-    
+
+
 class EditProductView(SupplierLoginMixin, UpdateView):
     model = Product
     form_class = EditProductForm
@@ -203,18 +229,23 @@ class EditProductView(SupplierLoginMixin, UpdateView):
 
     def form_valid(self, form):
         if form.instance.supplier.user != self.request.user:
-            return HttpResponseForbidden("You are not authorized to edit this product.")
+            return HttpResponseForbidden(
+                "You are not authorized to edit this product.")
         return super().form_valid(form)
-    
+
+
 class ProductDeleteView(DeleteView):
     model = Product
-    template_name = 'supplier/edit_product.html' 
+    template_name = 'supplier/edit_product.html'
     success_url = reverse_lazy('supplier_dashboard')
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.delete()
-        response_data = {'result': 'success', 'message': 'Product deleted successfully.'}
+        response_data = {
+            'result': 'success',
+            'message': 'Product deleted successfully.'
+        }
         return JsonResponse(response_data)
 
 
