@@ -11,11 +11,11 @@
   <div class="heading">
     <h1>Admin Dashboard</h1>
     <div class="inner">
-        <a href="/ims/dashboard" class="link">Inventory</a>
-        <a href="/ims/products" class="link">Products</a>
+      <a href="/ims/dashboard" class="link">Inventory</a>
+      <a href="/ims/products" class="link">Products</a>
     </div>
     <div class="inner">
-        <a href="{% url 'logout' %}" class="link">Logout</a>
+      <a href="{% url 'logout' %}" class="link">Logout</a>
     </div>
   </div>
 {% endblock %}
@@ -23,29 +23,45 @@
 {% block content %}
   <div class="main-content">
     <div class="filter-box">
-        <div>Search box</div>
-        <h2>Inventory List</h2>
-        <div>
-            {% comment %} <span>Filter Options</span>
-            <button id="addNewItemBtn" class="btn">Add New Item</button> {% endcomment %}
-        </div>
+      <div>Search box</div>
+      <h2>Inventory List</h2>
+      <div>
+        {% comment %} <span>Filter Options</span>
+        <button id="addNewItemBtn" class="btn">Add New Item</button> {% endcomment %}
+      </div>
     </div>
     <div class="card-container">
-      {% for inventory in inventory_list %}
-        <div class="item-card">
+      {% if inventory_list %}
+        {% for inventory in inventory_list %}
+          <div class="item-card {% if inventory.stock < 20 %}low-stock{% endif %} {% if inventory.stock < 5 %}very-low-stock{% endif %}">
             <img src="{% static 'images/no-image.png' %}" alt="{{ inventory.product.name }}" />
-            <div><span class="bold">{{ inventory.product.name }}</span> </div>
-            <div><span class="bold">Rs: </span>{{ inventory.selling_unit_price }} </div>
-            <div><span class="bold">Stock: </span>{{ inventory.stock }}</div>
-        </div>
-      {% endfor %}
+            <div>
+              <span class="bold">{{ inventory.product.name }}</span>
+            </div>
+            <div>
+              <span class="bold">Description:</span>{{ inventory.product.description }}
+            </div>
+            <div>
+              <span class="bold">Purchased Price(Rs):</span>{{ inventory.product.unit_price }}
+            </div>
+            <div>
+              <span class="bold">Selling Price(Rs):</span>{{ inventory.selling_unit_price }}
+            </div>
+            <div>
+              <span class="bold">Stock:</span>{{ inventory.stock }}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-status">No inventory available.</div>
+      {% endif %}
     </div>
   </div>
   <script>
-    $(document).ready(function() {
-        var currentPath = window.location.pathname;
-        console.log("current path : ",currentPath)
-        $('a[href="' + currentPath + '"]').addClass('active');
-    });
-</script>
+    $(document).ready(function () {
+      var currentPath = window.location.pathname
+      console.log('current path : ', currentPath)
+      $('a[href="' + currentPath + '"]').addClass('active')
+    })
+  </script>
 {% endblock %}

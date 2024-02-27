@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block meta %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin_dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin_product_list.css' %}" />
+{% endblock %}
+{% block title %}
+  Admin Dashboard
+{% endblock %}
+
+{% block header %}
+  <div class="heading">
+    <h1>Admin Dashboard</h1>
+    <div class="inner">
+      <a href="/ims/dashboard" class="link">Inventory</a>
+      <a href="/ims/products" class="link">Products</a>
+    </div>
+    <div class="inner">
+      <a href="{% url 'logout' %}" class="link">Logout</a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <div class="filter-box">
+      <div>Search box</div>
+      <h2>Product List</h2>
+      <div></div>
+    </div>
+    <div class="card-container">
+      {% if product_list %}
+        {% for product in product_list %}
+          <div class="item-card {% if product.stock < 20 %}{% endif %} {% if product.stock < 5 %}{% endif %}" id="productCard">
+            <img src="{% static 'images/no-image.png' %}" alt="{{ product.name }}" />
+            <div>
+              <span class="bold">{{ product.name }}</span>
+            </div>
+            <div>
+              <span class="bold">Rs:&nbsp;</span>{{ product.unit_price }}
+            </div>
+            <div>
+              <span class="bold">Supplier:&nbsp;</span><a href="/ims/supplier/{{ product.supplier.user.id }}">{{ product.supplier.user.username }}</a>
+            </div>
+            <div>
+              <span class="bold">Stock:&nbsp;</span>{{ product.stock }}
+            </div>
+            <div>
+              <span class="bold">Status:&nbsp;</span>{% if product.active_status %}
+                 Available
+              {% else %}
+                Not Available
+              {% endif %}
+            </div>
+            <div>
+              <button class="btn purchase-btn" data-product-id="{{ product.id }}" {% if not product.active_status or product.stock == 0 %}disabled{% endif %}>Purchase</button>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-status">No products.</div>
+      {% endif %}
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      var currentPath = window.location.pathname
+      console.log('current path : ', currentPath)
+      $('a[href="' + currentPath + '"]').addClass('active')
+    
+      $('.purchase-btn').on('click', function () {
+        var productId = $(this).data('product-id')
+        var purchaseUrl = '/ims/purchase/' + productId
+    
+        window.location.href = purchaseUrl
+      })
+    })
+  </script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block meta %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin_dashboard.css' %}" />
+{% endblock %}
+{% block title %}
+  Admin Dashboard
+{% endblock %}
+
+{% block header %}
+  <div class="heading">
+    <h1>Admin Dashboard</h1>
+    <div class="inner">
+      <a href="/ims/dashboard" class="link">Inventory</a>
+      <a href="/ims/products" class="link">Products</a>
+    </div>
+    <div class="inner">
+      <a href="{% url 'logout' %}" class="link">Logout</a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <div class="filter-box">
+      <div></div>
+      <h2>Purchase {{ product.name }}</h2>
+      <div></div>
+    </div>
+    <div class="form-container">
+      <form method="post" enctype="multipart/form-data" class="my-form">
+        {% csrf_token %}
+        <img class="form-img" src="{% static 'images/no-image.png' %}" alt="{{ product.name }}" />
+        <div class="bold">{{ product.name }}</div>
+        <div>
+          <span class="bold">Description</span> : {{ product.description }}
+        </div>
+        <div>
+          <span class="bold">Available Stock</span> : {{ product.stock }}
+        </div>
+        <div>
+          <span class="bold">Supplier</span> : <a href="/ims/supplier/{{ product.supplier.user.id }}">{{ product.supplier.user.username }}</a>
+        </div>
+        <div class="purchase-quantity">
+          <label for="intake_stock bold">Purchasing Quantity(max:{{ product.stock }})</label>
+          <input name="stock" type="number" min="1" max="{{ product.stock }}" id="intakeStockInput" />
+        </div>
+        <button class="btn" type="submit" id="purchaseBtn">Purchase</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      var currentPath = window.location.pathname
+      $('a[href="' + currentPath + '"]').addClass('active')
+
+      var initialIntakeStockValue = $('#intakeStockInput').val();
+      var maxStockValue = parseInt($('#intakeStockInput').attr('max'));
+
+      // Enable or disable the purchase button based on the initial value
+      if (initialIntakeStockValue > 0 && initialIntakeStockValue <= maxStockValue) {
+        $('#purchaseBtn').prop('disabled', false);
+      } else {
+        $('#purchaseBtn').prop('disabled', true);
+      }
+
+      // Enable or disable the purchase button based on the onchange value
+      $('#intakeStockInput').on('input', function () {
+        var intakeStockValue = $(this).val();
+        var maxStockValue = parseInt($(this).attr('max'));
+        console.log("intakevalue : ",intakeStockValue)
+        if (intakeStockValue > 0 && intakeStockValue <= maxStockValue) {
+          $('#purchaseBtn').prop('disabled', false);
+        } else {
+          $('#purchaseBtn').prop('disabled', true);
+        }
+      });
+    })
+  </script>
+{% endblock %}

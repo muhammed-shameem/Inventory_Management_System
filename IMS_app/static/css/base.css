@@ -187,6 +187,22 @@ input[type='password']::-ms-clear {
   border: 1px solid black;
 }
 
+.low-stock {
+  border: 2px solid rgb(180, 180, 17);
+  animation: blink 1s infinite;
+}
+
+.very-low-stock {
+  border: 2px solid red;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
 .item-card img {
   flex:2.5;
   width:100%;
@@ -237,4 +253,16 @@ input[type='password']::-ms-clear {
   width:100%;
   display: block;
   margin-bottom: 20px;
+}
+
+.empty-status{
+  width:100%;
+  min-height:100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+  font-size: 25px;
+  font-weight: 500;
+  color: red;
 }
