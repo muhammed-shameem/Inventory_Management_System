@@ -3,8 +3,10 @@ from django.contrib.auth.models import User
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.urls import reverse,reverse_lazy
 from .models import Supplier,Product,Inventory
-from django.urls import reverse
+from .helpers import create_user,create_supplier
+
 
 USERNAME = "Test Supplier"
 PASSWORD = 'testpassword'
@@ -231,3 +233,63 @@ class CustomLoginViewTest(TestCase):
         response = client.post(reverse('login'), {'username': 'invaliduser', 'password': 'invalidpassword'})
         self.assertEqual(response.status_code, 200)#failure status code
         self.assertTemplateUsed(response, 'login.html')
+        
+        
+class AdminDashboardViewTest(TestCase):
+    
+    """
+    Test cases for the AdminDashboardView.
+
+    Methods:
+    - setUp: Setup method to create test admin user and products with inventory.
+    - test_get_context_data_no_search: Checks if the context is correctly populated without search query.
+    - test_get_context_data_with_search: Checks if the context is correctly filtered with a search query.
+    - test_access_denied_for_non_admin: Checks if access is denied for non-admin users.
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.admin = User.objects.create_superuser(
+            username='admin', password='testpassword', email="admin@example.com")
+        product1 = Product.objects.create(
+            supplier=create_supplier('user1','1234567'),
+            name="Product 1",
+            description="Product description 1",
+            unit_price=Decimal('10.00'),
+            stock=10,
+            active_status=True
+        )
+        Inventory.objects.create(product=product1, selling_unit_price=Decimal('12.00'), stock=5)
+
+        product2 = Product.objects.create(
+            supplier=create_supplier('user2','1234566787'),
+            name="Product 2",
+            description="Product description 2",
+            unit_price=Decimal('20.00'),
+            stock=20,
+            active_status=True
+        )
+        Inventory.objects.create(product=product2, selling_unit_price=Decimal('25.00'), stock=15)
+
+    def test_get_context_data_no_search(self):
+        self.client.login(username='admin', password='testpassword')
+        response = self.client.get(reverse_lazy('admin_dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['inventory_list']), 2)
+        self.assertEqual(response.context['search_query'], '')
+        self.client.logout()
+
+    def test_get_context_data_with_search(self):
+        self.client.login(username='admin', password='testpassword')
+        search_query = 'Product 1'
+        response = self.client.get(reverse_lazy('admin_dashboard'), {'search': search_query})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['inventory_list']), 1)
+        self.assertEqual(response.context['inventory_list'][0].product.name, search_query)
+        self.client.logout()
+        
+    def test_access_denied_for_non_admin(self):
+        user = User.objects.create_user('supplieruser', 'password', 'user@example.com')
+        self.client.login(username='supplieruser', password='password')
+        response = self.client.get(reverse_lazy('admin_dashboard'))
+        self.assertEqual(response.status_code, 403)  
