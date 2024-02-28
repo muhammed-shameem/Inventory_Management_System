@@ -1,0 +1,286 @@
+/* You can add global styles to this file, and also import other style files */
+
+/*
+  1. Use a more-intuitive box-sizing model.
+*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+/*
+  2. Remove default margin
+*/
+* {
+  margin: 0;
+}
+/*
+  3. Allow percentage-based heights in the application
+*/
+html,
+body {
+  font-family: 'Lato', Arial, Helvetica, sans-serif;
+  height: 100%;
+  background: #ffffff;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+/*
+  Typographic tweaks!
+  4. Add accessible line-height
+  5. Improve text rendering
+*/
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+/*
+  6. Improve media defaults
+*/
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+/*
+  7. Remove built-in form typography styles
+*/
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+/*
+  8. Avoid text overflows
+*/
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+h2,h3{
+  text-decoration: underline;
+}
+
+a {
+  text-decoration: none;
+}
+
+/*
+  9. Create a root stacking context
+*/
+#root,
+#__next {
+  isolation: isolate;
+  height: 100%;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+noscript {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  height: 200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+/* Utility classes */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 1px rgb(222, 222, 222);
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #b7b7b7;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #979696;
+}
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear {
+  display: none;
+}
+
+.header{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height: 90px;
+    padding: 20px;
+    border-bottom: 1px solid black;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    display: flex;
+}
+
+.content{
+    width:100%;
+    min-height: 100vh;
+    height:auto;
+    display: flex;
+    padding: 110px 20px 20px 20px ;
+}
+
+.main-content{
+  width:100%
+}
+
+.filter-box{
+  width:100%;
+  display:flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.btn{
+    background-color: black;
+    color: #ffffff;
+    cursor: pointer;
+    width:100%;
+}
+
+.btn:disabled{
+  background-color: grey;
+  cursor: auto;
+}
+
+.card-container{
+  width:100%;
+  display: flex;
+  gap: 20px;
+}
+
+.item-card{
+  padding:10px;
+  width:250px;
+  min-height:300px;
+  height:auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  border: 1px solid black;
+}
+
+.low-stock {
+  border: 2px solid rgb(180, 180, 17);
+  animation: blink 1s infinite;
+}
+
+.very-low-stock {
+  border: 2px solid red;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+.item-card img {
+  flex:2.5;
+  width:100%;
+  margin-bottom: 20px;
+}
+
+.item-card div {
+  flex:1;
+  width:100%;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.form-container{
+  margin-top: 50px;
+  width:100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-form{
+  border-radius: 5px;
+  padding: 20px;
+  min-height: 200px;
+  width: 350px;
+  border: 2px solid black;
+}
+
+.form-img{
+  width:100%
+}
+
+.purchase-quantity{
+  width:100%;
+  margin-top: 30px;
+}
+
+.purchase-quantity label{
+  width:100%;
+  display: block;
+  font-weight: 600;
+}
+
+.purchase-quantity input{
+  width:100%;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.empty-status{
+  width:100%;
+  min-height:100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+  font-size: 25px;
+  font-weight: 500;
+  color: red;
+}
+
+
+.error-section{
+  margin-top: 10px;
+  width:100%;
+  text-align: center;
+  color:red
+}
+
+.anchor-button{
+  background-color: black;
+  color: #ffffff;
+  padding: 10px 20px;
+}

@@ -1,0 +1,67 @@
+{% extends 'admin/admin_dashboard_base.html' %}
+{% load static %}
+{% block meta %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/inventory_report.css' %}" />
+{% endblock %}
+{% block title %}
+  Admin Inventory Report
+{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <div class="filter-box">
+      <div class="d-flex align-items-center gap-20">
+        <form method="get" action="{% url 'inventory_report' %}">
+          <input type="text" name="search" placeholder="Search product,desc,supplier" value="{{ search_query }}" />
+          <button type="submit" class="btn-dark">Search</button>
+        </form>
+        {% if search_query %}
+          <button id="clear" class="btn-light btn-outline-secondary ml-2" data-url-id="{% url 'inventory_report' %}">Clear</button>
+        {% endif %}
+      </div>
+      <h2>Inventory Report</h2>
+      <div>
+        <a href="{% url 'export_inventory_report' %}" class="anchor-button">Export to CSV</a>
+      </div>
+    </div>
+    <div class="table-container">
+      {% if inventory %}
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>
+                <a href="?sort_by=product__name">Product Name</a>
+              </th>
+              <th>
+                <a href="?sort_by=product__supplier__user__username">Supplier</a>
+              </th>
+              <th>
+                <a href="?sort_by=product__unit_price">Purchase Price</a>
+              </th>
+              <th>
+                <a href="?sort_by=selling_unit_price">Selling Price</a>
+              </th>
+              <th>
+                <a href="?sort_by=stock">Stock</a>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in inventory %}
+              <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.supplier.user.username }}</td>
+                <td>{{ item.product.unit_price }}</td>
+                <td>{{ item.selling_unit_price }}</td>
+                <td>{{ item.stock }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="empty-status">No inventory available.</div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

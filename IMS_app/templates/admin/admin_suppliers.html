@@ -1,0 +1,66 @@
+{% extends 'admin/admin_dashboard_base.html' %}
+{% load static %}
+{% block meta %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_product_list.css' %}" />
+{% endblock %}
+{% block title %}
+  Admin Suppliers List
+{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <div class="filter-box">
+      <div class="d-flex align-items-center gap-20">
+        <form method="get" action="{% url 'admin_dashboard_suppliers' %}">
+          <input type="text" name="search" placeholder="Search username,firstname..." value="{{ search_query }}" />
+          <button type="submit" class="btn-dark">Search</button>
+        </form>
+        {% if search_query %}
+          <button id="clear" class="btn-light btn-outline-secondary ml-2" data-url-id="{% url 'admin_dashboard_suppliers' %}">Clear</button>
+        {% endif %}
+      </div>
+      <h2>Suppliers List</h2>
+      <div></div>
+    </div>
+    <div class="card-container">
+      {% if suppliers_list %}
+        {% for supplier in suppliers_list %}
+          <div class="item-card" id="supplierCard">
+            <img src="{% static 'images/default-avatar.png' %}" alt="{{ supplier.user.username }}" />
+            <div>
+              <span class="bold">Username : </span>{{ supplier.user.username }}
+            </div>
+            <div>
+              <span class="bold">First Name:&nbsp;</span>{{ supplier.user.first_name }}
+            </div>
+            <div>
+              <span class="bold">Last Name:&nbsp;</span>{{ supplier.user.last_name }}
+            </div>
+            <div>
+              <span class="bold">Status:&nbsp;</span>{% if supplier.user.is_active %}
+                Enabled
+              {% else %}
+                Disabled
+              {% endif %}
+            </div>
+            <div>
+              <button id="viewSupplierBtn" class="btn btn-dark viewSupplierBtn" data-supplier-id="{{ supplier.pk }}">View full profile</button>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-status">No registered suppliers.</div>
+      {% endif %}
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      $('.viewSupplierBtn').on('click', function () {
+        var supplierId = $(this).data('supplier-id');
+        var supplierUrl = '/ims/supplier/' + supplierId;
+        window.location.href = supplierUrl;
+    });
+    })
+  </script>
+{% endblock %}

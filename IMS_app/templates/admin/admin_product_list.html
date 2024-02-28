@@ -1,0 +1,73 @@
+{% extends 'admin/admin_dashboard_base.html' %}
+{% load static %}
+{% block meta %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_product_list.css' %}" />
+{% endblock %}
+{% block title %}
+  Admin Products List
+{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <div class="filter-box">
+      <div class="d-flex align-items-center gap-20">
+        <form method="get" action="{% url 'admin_dashboard_products' %}">
+          <input type="text" name="search" placeholder="Search product,desc,supplier..." value="{{ search_query }}" />
+          <button type="submit" class="btn-dark">Search</button>
+        </form>
+        {% if search_query %}
+          <button id="clear" class="btn-light btn-outline-secondary ml-2" data-url-id="{% url 'admin_dashboard_products' %}">Clear</button>
+        {% endif %}
+      </div>
+      <h2>Products List</h2>
+      <div></div>
+    </div>
+    <div class="card-container">
+      {% if product_list %}
+        {% for product in product_list %}
+          <div class="item-card {% if product.stock < 20 and product.stock > 4 %}low-stock{% endif %} {% if product.stock < 5 and product.stock > 0 %}very-low-stock{% endif %}" id="productCard">
+            <img src="{% static 'images/no-image.png' %}" alt="{{ product.name }}" />
+            <div>
+              <span class="bold">{{ product.name }}</span>
+            </div>
+            <div>
+              <span class="bold">Description:&nbsp;</span>{{ product.description }}
+            </div>
+            <div>
+              <span class="bold">Rs:&nbsp;</span>{{ product.unit_price }}
+            </div>
+            <div>
+              <span class="bold">Supplier:&nbsp;</span><a href="/ims/supplier/{{ product.supplier.pk }}">{{ product.supplier.user.username }}</a>
+            </div>
+            <div>
+              <span class="bold">Stock:&nbsp;</span>{{ product.stock }}
+            </div>
+            <div>
+              <span class="bold">Status:&nbsp;</span>{% if product.active_status %}
+                 Available
+              {% else %}
+                Not Available
+              {% endif %}
+            </div>
+            <div>
+              <button id="purchaseBtn" class="btn btn-dark purchase-btn" data-product-id="{{ product.id }}" {% if not product.active_status or product.stock == 0 %}disabled{% endif %}>Purchase</button>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-status">No products.</div>
+      {% endif %}
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      $('.purchase-btn').on('click', function () {
+        var productId = $(this).data('product-id')
+        var purchaseUrl = '/ims/purchase/' + productId
+    
+        window.location.href = purchaseUrl
+      })
+    })
+  </script>
+{% endblock %}

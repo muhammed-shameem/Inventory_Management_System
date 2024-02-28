@@ -1,0 +1,38 @@
+{% extends 'supplier/supplier_base.html' %}
+{% load static %}
+{% block meta %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_product_list.css' %}" />
+{% endblock %}
+{% block title %}
+  Suppler Add Product
+{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <div class="filter-box">
+      <div></div>
+      <h2>Add Product</h2>
+      <div></div>
+    </div>
+    <div class="card-container">
+      <div class="form-container">
+        <form method="post" enctype="multipart/form-data" class="form">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-dark">Save Product</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      $('.edit-btn').on('click', function () {
+        var productId = $(this).data('product-id')
+        var purchaseUrl = '/supplier/' + productId + '/edit'
+    
+        window.location.href = purchaseUrl
+      })
+    })
+  </script>
+{% endblock %}

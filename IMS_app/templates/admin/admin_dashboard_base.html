@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      {% block title %}
+        Home
+      {% endblock %}
+    </title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block meta %}
+
+    {% endblock %}
+  </head>
+  <body>
+    <div class="header">
+      <div class="heading">
+        <h1>Admin Dashboard</h1>
+        <div class="inner">
+          <a href="/ims/dashboard" class="link">Inventory</a>
+          <a href="/ims/products" class="link">Products</a>
+          <a href="/ims/suppliers" class="link">Suppliers</a>
+          <a href="/ims/reports" class="link">Reports</a>
+        </div>
+        <div class="inner">
+          {% if user.is_authenticated %}
+            <span>Hi, {{ user.username }}!</span>
+          {% endif %}
+
+          <a href="#" id="logoutBtn" data-toggle="modal" data-target="#logoutModal" data-logout-url="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      {% block content %}
+
+      {% endblock %}
+    </div>
+    <!-- Logout Modal -->
+    <div class="modal" id="logoutModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Logout Confirmation</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <p>Are you sure you want to logout?</p>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light btn-outline-secondary" data-dismiss="modal">No</button>
+            <a href="#" class="btn btn-dark" id="confirmLogoutBtn">Yes</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      var currentPath = window.location.pathname
+      $('a[href="' + currentPath + '"]').addClass('active')
+    
+      $('#logoutBtn').click(function () {
+        var logoutUrl = $(this).data('logout-url')
+        $('#confirmLogoutBtn').attr('href', logoutUrl)
+      })
+
+      $('#clear').on('click', function () {
+        var clearUrl = $(this).data('url-id')
+        window.location.href = clearUrl
+      })
+      
+    })
+  </script>
+</html>

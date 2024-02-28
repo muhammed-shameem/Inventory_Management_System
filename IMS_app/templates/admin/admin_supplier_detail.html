@@ -1,0 +1,98 @@
+{% extends 'admin/admin_dashboard_base.html' %}
+{% load static %}
+{% block meta %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/admin/admin_supplier_detail.css' %}" />
+{% endblock %}
+{% block title %}
+  Admin Supplier Detail
+{% endblock %}
+
+{% block content %}
+  <div class="main-content">
+    <div class="filter-box">
+      <div></div>
+      <h2>Supplier Detail - {{ supplier.user.username }}</h2>
+      <div></div>
+    </div>
+    <div class="main-container">
+      <div class="profile-container">
+        <img class="form-img" src="{% static 'images/default-avatar.png' %}" alt="{{ supplier.user.username }}" />
+        <div>
+          <span class="bold">Username :</span>{{ supplier.user.username }}
+        </div>
+        <div>
+          <span class="bold">Email :</span>{{ supplier.user.email }}
+        </div>
+        <div>
+          <span class="bold">First Name</span> : {{ supplier.user.first_name }}
+        </div>
+        <div>
+          <span class="bold">Last Name:&nbsp;</span>{{ supplier.user.last_name }}
+        </div>
+        <div>
+          <span class="bold">Status:&nbsp;</span>{% if supplier.user.is_active %}
+            Enabled
+          {% else %}
+            Disabled
+          {% endif %}
+        </div>
+        <div>
+          <span class="bold">Phone Number</span> : {{ supplier.phone_number }}
+        </div>
+        <div>
+          <span class="bold">Address</span> : {{ supplier.address }}
+        </div>
+      </div>
+      <div class="product-container">
+        <h3>Products of {{ supplier.user.username }}</h3>
+        <div class="product-list-container">
+            {% if products %}
+        {% for product in products %}
+          <div class="item-card {% if product.stock < 20 and product.stock > 4 %}low-stock{% endif %} {% if product.stock < 5 and product.stock > 0 %}very-low-stock{% endif %}" id="productCard">
+            <img src="{% static 'images/no-image.png' %}" alt="{{ product.name }}" />
+            <div>
+              <span class="bold">{{ product.name }}</span>
+            </div>
+            <div>
+              <span class="bold">Description:&nbsp;</span>{{ product.description }}
+            </div>
+            <div>
+              <span class="bold">Rs:&nbsp;</span>{{ product.unit_price }}
+            </div>
+            {% comment %} <div>
+              <span class="bold">Supplier:&nbsp;</span><a href="/ims/supplier/{{ product.supplier.pk }}">{{ product.supplier.user.username }}</a>
+            </div> {% endcomment %}
+            <div>
+              <span class="bold">Stock:&nbsp;</span>{{ product.stock }}
+            </div>
+            <div>
+              <span class="bold">Status:&nbsp;</span>{% if product.active_status %}
+                 Available
+              {% else %}
+                Not Available
+              {% endif %}
+            </div>
+            <div>
+              <button id="purchaseBtn" class="btn btn-dark purchase-btn" data-product-id="{{ product.id }}" {% if not product.active_status or product.stock == 0 %}disabled{% endif %}>Purchase</button>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-status">No products.</div>
+      {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+        $('.purchase-btn').on('click', function () {
+            var productId = $(this).data('product-id')
+            var purchaseUrl = '/ims/purchase/' + productId
+        
+            window.location.href = purchaseUrl
+          })
+    })
+  </script>
+{% endblock %}

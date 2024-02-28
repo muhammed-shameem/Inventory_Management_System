@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block meta %}<link rel="stylesheet" type="text/css" href="{% static 'css/landing_page.css' %}">{% endblock %}
+{% block title %}Inventory Management System{% endblock %}
+
+{% block header %}
+<div class="heading">
+    {% comment %} <a href="/home">Home</a> {% endcomment %}
+    <a href="/login">Login</a>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="content-heading">Inventory Management System</div>
+{% endblock %}
