@@ -22,7 +22,7 @@
       </div>
       <h2>Inventory Report</h2>
       <div>
-        <a href="{% url 'export_inventory_report' %}" class="anchor-button">Export to CSV</a>
+        <Button id="export-csv" class="btn btn-dark">Export CSV</Button>
       </div>
     </div>
     <div class="table-container">
@@ -64,4 +64,32 @@
       {% endif %}
     </div>
   </div>
+  <script>
+    $(document).ready(function () {
+      // Add CSV export functionality
+      $('#export-csv').on('click', function () {
+          var csvContent = "data:text/csv;charset=utf-8,";
+          var rows = $('.inventory-table tbody tr');
+
+          var headerRowData = ['Product Name', 'Supplier', 'Purchase Price', 'Selling Price', 'Quantity'];
+          csvContent += headerRowData.join(',') + '\n';
+  
+          rows.each(function (index, row) {
+              var rowData = [];
+              $(row).find('td').each(function (index, cell) {
+                  rowData.push($(cell).text());
+              });
+              csvContent += rowData.join(',') + '\n';
+          });
+  
+          var encodedUri = encodeURI(csvContent);
+          var link = document.createElement('a');
+          link.setAttribute('href', encodedUri);
+          link.setAttribute('download', 'inventory_report.csv');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      });
+  });
+  </script>
 {% endblock %}

@@ -428,25 +428,3 @@ class ProductDeleteView(DeleteView):
         }
         return JsonResponse(response_data)
 
-
-def export_csv(request):
-
-    response = HttpResponse(content_type='text/csv')
-    response[
-        'Content-Disposition'] = 'attachment; filename="inventory_report.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow([
-        'Product Name', 'Supplier', 'Purchase Price', 'Selling Price',
-        'Quantity'
-    ])
-
-    queryset = Inventory.objects.all()
-    for inventory in queryset:
-        writer.writerow([
-            inventory.product.name, inventory.product.supplier.user.username,
-            inventory.product.unit_price, inventory.selling_unit_price,
-            inventory.stock
-        ])  # Adjust fields as needed
-
-    return response
