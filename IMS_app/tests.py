@@ -219,19 +219,19 @@ class CustomLoginViewTest(TestCase):
     def test_login_redirect_admin(self):
         client = Client()
         response = client.post(reverse('login'), {'username': self.admin.username, 'password': 'testpassword'})
-        self.assertEqual(response.status_code, 302) #success status code
+        self.assertEqual(response.status_code, 302) #success status code django template
         self.assertRedirects(response, reverse('admin_dashboard'))
 
     def test_login_redirect_supplier(self):
         client = Client()
         response = client.post(reverse('login'), {'username': self.supplier.user.username, 'password': PASSWORD})
-        self.assertEqual(response.status_code, 302)#success status code
+        self.assertEqual(response.status_code, 302)#success status code django template
         self.assertRedirects(response, reverse('supplier_dashboard'))
         
     def test_login_invalid_credentials(self):
         client = Client()
         response = client.post(reverse('login'), {'username': 'invaliduser', 'password': 'invalidpassword'})
-        self.assertEqual(response.status_code, 200)#failure status code
+        self.assertEqual(response.status_code, 200)#failure status code django template
         self.assertTemplateUsed(response, 'login.html')
         
         
@@ -358,3 +358,53 @@ class SupplierDashboardViewTest(TestCase):
         response = self.client.get(reverse_lazy('supplier_dashboard'))
         self.assertEqual(response.status_code, 403) 
         self.client.logout() 
+        
+class AddProductViewTest(TestCase):
+    
+    """
+    Test cases for the AddProductView.
+
+    Methods:
+    - setUp: Setup method to create test users.
+    - test_access_denied_for_anonymous_user: Checks if access is denied for an anonymous user.
+    - test_access_granted_for_logged_in_supplier: Checks if access is granted for a logged-in supplier.
+    - test_product_creation_success: Checks if a product is successfully created.
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.anonymous_user = create_user(username='anonymous', password='anonymous_password')
+        self.supplier = create_supplier(username='supplier1', phone_number='1234567890')
+
+    def test_access_denied_for_anonymous_user(self):
+        self.client.login(username='anonymous', password='anonymous_password')
+        response = self.client.get(reverse_lazy('add_product'))
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+    def test_access_granted_for_logged_in_supplier(self):
+        self.client.login(username='supplier1', password='supplierpass')
+        response = self.client.get(reverse_lazy('add_product'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'supplier/add_product.html')
+
+    def test_product_creation_success(self):
+        self.client.login(username='supplier1', password='supplierpass')
+        data = {
+            'name': PRODUCT_NAME,
+            'description': PRODUCT_DESC,
+            'unit_price': UNIT_PRICE,
+            'stock':STOCK,
+        }
+        response = self.client.post(reverse_lazy('add_product'), data)
+        self.assertEqual(response.status_code, 302)
+
+        product = Product.objects.get(name=PRODUCT_NAME)
+        self.assertEqual(product.supplier, self.supplier)
+        self.assertEqual(product.name, data['name'])
+        self.assertEqual(product.description, data['description'])
+        self.assertEqual(product.unit_price, data['unit_price'])
+        self.assertEqual(product.stock, data['stock'])
+
+    def tearDown(self):
+        self.client.logout()
