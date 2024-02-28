@@ -245,6 +245,7 @@ class AdminDashboardViewTest(TestCase):
     - test_get_context_data_no_search: Checks if the context is correctly populated without search query.
     - test_get_context_data_with_search: Checks if the context is correctly filtered with a search query.
     - test_access_denied_for_non_admin: Checks if access is denied for non-admin users.
+    - test_unauthorized_access: Checks if access is denied for non-logged users.
     """
 
     def setUp(self):
@@ -292,4 +293,68 @@ class AdminDashboardViewTest(TestCase):
         user = User.objects.create_user('supplieruser', 'password', 'user@example.com')
         self.client.login(username='supplieruser', password='password')
         response = self.client.get(reverse_lazy('admin_dashboard'))
+        self.assertEqual(response.status_code, 403) 
+        self.client.logout() 
+    
+    def test_unauthorized_access(self):
+        response = self.client.get(reverse_lazy('admin_dashboard'))
         self.assertEqual(response.status_code, 403)  
+        
+        
+        
+class SupplierDashboardViewTest(TestCase):
+    """
+    Test cases for the SupplierDashboardView.
+
+    Methods:
+    - setUp: Setup method to create a test supplier user and products.
+    - test_get_context_data_no_search: Checks if the context is correctly populated without a search query.
+    - test_get_context_data_with_search: Checks if the context is correctly filtered with a search query.
+    - test_access_denied_for_non_supplier: Checks if access is denied for non-supplier users.
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.supplier = create_supplier(username='supplieruser',phone_number="1233456787888")
+
+        product1 = Product.objects.create(
+            supplier=self.supplier,
+            name="Product 1",
+            description="Product description 1",
+            unit_price=10.00,
+            stock=10,
+            active_status=True
+        )
+
+        product2 = Product.objects.create(
+            supplier=self.supplier,
+            name="Product 2",
+            description="Product description 2",
+            unit_price=20.00,
+            stock=20,
+            active_status=True
+        )
+
+    def test_get_context_data_no_search(self):
+        self.client.login(username='supplieruser', password='supplierpass')
+        response = self.client.get(reverse_lazy('supplier_dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['products_list']), 2)
+        self.assertEqual(response.context['search_query'], '')
+        self.client.logout()
+
+    def test_get_context_data_with_search(self):
+        self.client.login(username='supplieruser', password='supplierpass')
+        search_query = 'Product 1'
+        response = self.client.get(reverse_lazy('supplier_dashboard'), {'search': search_query})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['products_list']), 1)
+        self.assertEqual(response.context['products_list'][0].name, search_query)
+        self.client.logout()
+        
+    def test_access_denied_for_non_supplier(self):
+        user = create_user(username='normaluser', password='user@example.com')
+        self.client.login(username='normaluser', password='user@example.com')
+        response = self.client.get(reverse_lazy('supplier_dashboard'))
+        self.assertEqual(response.status_code, 403) 
+        self.client.logout() 
