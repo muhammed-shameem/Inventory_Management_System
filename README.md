@@ -1,7 +1,7 @@
-# Inventory Management Application
+# Inventory Management System
 
 ## Description
-This Django project provides an app for managing inventory.
+This Django project provides an interface for managing inventory.
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
