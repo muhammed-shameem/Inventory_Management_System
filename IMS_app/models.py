@@ -18,6 +18,11 @@ class Supplier(models.Model):
     address = models.TextField()
     
     def clean(self):
+        """
+        Custom clean method to validate the length of the phone number.
+        Raises:
+            ValidationError: If phone number length is greater than 20 characters.
+        """
         if self.phone_number and len(self.phone_number)>20:
             raise ValidationError({'phone_number': ['Phone number length must be less than or equal to 20.']})
 
@@ -57,6 +62,11 @@ class Product(models.Model):
     active_status=models.BooleanField(default=True)
     
     def clean(self):
+        """
+        Custom clean method to validate unit price and name fields.
+        Raises:
+            ValidationError: If unit price is less than 0.01 or name is not provided.
+        """
         if self.unit_price < Decimal('0.01'):
             raise ValidationError({'unit_price': ['Unit price must be greater than or equal to 0.01.']})
         
@@ -68,7 +78,7 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        return f"{self.pk} {self.name}"
     
 
 
@@ -84,6 +94,19 @@ class Inventory(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
     selling_unit_price = models.DecimalField(max_digits=20, decimal_places=2)
     stock = models.PositiveIntegerField()
+    
+    def clean(self):
+        """
+        Custom clean method to validate selling unit price.
+        Raises:
+            ValidationError: If selling unit price is less than 0.01.
+        """
+        if self.selling_unit_price < Decimal('0.01'):
+            raise ValidationError({'selling_unit_price': ['Unit price must be greater than or equal to 0.01.']})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.product.name} (Inventory)"

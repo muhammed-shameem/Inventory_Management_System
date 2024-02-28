@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
-from .models import Supplier,Product
+from .models import Supplier,Product,Inventory
 
 USERNAME = "Test Supplier"
 PASSWORD = 'testpassword'
@@ -127,3 +127,70 @@ class TestProductModel(TestCase):
                 stock=-10,
                 active_status=ACTIVE_STATUS
             )
+            
+            
+class TestInventoryModel(TestCase):
+    """
+    Test cases for the Inventory model.
+
+    - `test_instance`: Test the creation of an Inventory instance with valid data.
+    - `test_negative_selling_unit_price`: Test that creating an inventory with a negative selling unit price raises a ValidationError.
+    - `test_negative_stock_quantity`: Test that creating an inventory with a negative stock quantity raises a ValidationError.
+    - `test_unique_product`: Test that creating two inventories with the same product raises an IntegrityError.
+    """
+
+    def setUp(self):
+        self.user = User.objects.create(username=USERNAME, password=PASSWORD)
+        self.supplier = Supplier.objects.create(
+            user=self.user,
+            phone_number=PHONE_NUMBER,
+            address=ADDRESS
+        )
+        self.product = Product.objects.create(
+            supplier=self.supplier,
+            name=PRODUCT_NAME,
+            description=PRODUCT_DESC,
+            unit_price=UNIT_PRICE,
+            stock=STOCK,
+            active_status=ACTIVE_STATUS
+        )
+
+    def test_instance(self):
+        inventory = Inventory.objects.create(
+            product=self.product,
+            selling_unit_price=Decimal('15.00'),
+            stock=30
+        )
+        self.assertEqual(inventory.product, self.product)
+        self.assertEqual(inventory.selling_unit_price, Decimal('15.00'))
+        self.assertEqual(inventory.stock, 30)
+
+    def test_negative_selling_unit_price(self):
+        with self.assertRaises(ValidationError):
+            Inventory.objects.create(
+                product=self.product,
+                selling_unit_price=Decimal('-5.00'),
+                stock=30
+            )
+
+    def test_negative_stock_quantity(self):
+        with self.assertRaises(IntegrityError):
+            Inventory.objects.create(
+                product=self.product,
+                selling_unit_price=Decimal('15.00'),
+                stock=-10
+            )
+
+    def test_unique_product(self):
+        Inventory.objects.create(
+            product=self.product,
+            selling_unit_price=Decimal('15.00'),
+            stock=30
+        )
+        with self.assertRaises(IntegrityError):
+            Inventory.objects.create(
+                product=self.product,
+                selling_unit_price=Decimal('20.00'),
+                stock=15
+            )
+
