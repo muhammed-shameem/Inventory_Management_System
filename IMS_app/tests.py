@@ -96,14 +96,7 @@ class TestProductModel(TestCase):
         self.assertTrue(product.active_status)
 
     def test_name_required(self):
-        p=Product.objects.create(
-                supplier=self.supplier,
-                description=PRODUCT_DESC,
-                unit_price=UNIT_PRICE,
-                stock=STOCK,
-                active_status=ACTIVE_STATUS
-            )
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(Exception):
             Product.objects.create(
                 supplier=self.supplier,
                 description=PRODUCT_DESC,

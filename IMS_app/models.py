@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
+from decimal import Decimal
+from django.core.exceptions import ValidationError
 
 class Supplier(models.Model):
     """
@@ -24,18 +27,37 @@ class Product(models.Model):
 
     Attributes:
         supplier (Supplier): The supplier associated with the product.
-        name (str): The name of the product.
+        name (str): The name of the product. (Required field; cannot be blank or null.)
         description (str): The description of the product.
-        unit_price (Decimal): The unit price of the product.
+        unit_price (Decimal): The unit price of the product. Must be greater than or equal to 0.01.
         stock (int): The current stock quantity of the product.
         active_status (bool): Indicates if the product is active or not.
+
+    Note:
+        - The `unit_price` field enforces a minimum value constraint of 0.01.
+        - The `name` field is a required field and cannot be blank or null. If not provided,
+            a `ValidationError` will be raised during the `clean` method.
+        - The `clean` method additionally checks for negative values in the `unit_price` field.
+        - In SQLite, if a text field is defined as not null and a constraint is not met (e.g., an empty string),
+            the `clean` method raises a `ValidationError` to ensure data integrity.
     """
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.TextField()
-    unit_price = models.DecimalField(max_digits=20, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=20, decimal_places=2,validators=[MinValueValidator(Decimal('0.01'))])
     stock = models.PositiveIntegerField()
     active_status=models.BooleanField(default=True)
+    
+    def clean(self):
+        if self.unit_price < Decimal('0.01'):
+            raise ValidationError({'unit_price': ['Unit price must be greater than or equal to 0.01.']})
+        
+        if not self.name:
+            raise ValidationError({'name': ['This is a required field']})
+
+    def save(self, *args, **kwargs):
+        self.clean()  # Manually invoke the clean method
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
