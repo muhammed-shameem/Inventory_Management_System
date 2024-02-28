@@ -1,9 +1,10 @@
-from django.test import TestCase
+from django.test import TestCase,Client
 from django.contrib.auth.models import User
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from .models import Supplier,Product,Inventory
+from django.urls import reverse
 
 USERNAME = "Test Supplier"
 PASSWORD = 'testpassword'
@@ -194,3 +195,39 @@ class TestInventoryModel(TestCase):
                 stock=15
             )
 
+class CustomLoginViewTest(TestCase):
+    """
+    Test cases for the CustomLoginView.
+
+    Methods:
+    - setUp: Setup method to create test users for admin and supplier.
+
+    Test Cases:
+    - test_login_redirect_admin: Checks if the admin user is redirected to the admin dashboard.
+    - test_login_redirect_supplier: Checks if the supplier user is redirected to the supplier dashboard.
+    - test_login_invalid_credentials: Checks if login fails with invalid username or password.
+    """
+    
+    def setUp(self):
+        self.user = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        self.supplier = Supplier.objects.create(user=self.user, phone_number=PHONE_NUMBER,address=ADDRESS)
+        self.admin = User.objects.create_superuser(
+            username='admin', password='testpassword', email="admin@example.com")
+
+    def test_login_redirect_admin(self):
+        client = Client()
+        response = client.post(reverse('login'), {'username': self.admin.username, 'password': 'testpassword'})
+        self.assertEqual(response.status_code, 302) #success status code
+        self.assertRedirects(response, reverse('admin_dashboard'))
+
+    def test_login_redirect_supplier(self):
+        client = Client()
+        response = client.post(reverse('login'), {'username': self.supplier.user.username, 'password': PASSWORD})
+        self.assertEqual(response.status_code, 302)#success status code
+        self.assertRedirects(response, reverse('supplier_dashboard'))
+        
+    def test_login_invalid_credentials(self):
+        client = Client()
+        response = client.post(reverse('login'), {'username': 'invaliduser', 'password': 'invalidpassword'})
+        self.assertEqual(response.status_code, 200)#failure status code
+        self.assertTemplateUsed(response, 'login.html')
