@@ -11,7 +11,7 @@ class Supplier(models.Model):
         address (str): The address of the supplier.
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=20)
+    phone_number = models.CharField(max_length=20,unique=True)
     address = models.TextField()
 
     def __str__(self):
@@ -33,7 +33,7 @@ class Product(models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.TextField()
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=20, decimal_places=2)
     stock = models.PositiveIntegerField()
     active_status=models.BooleanField(default=True)
 
@@ -52,7 +52,7 @@ class Inventory(models.Model):
         stock (int): The current stock quantity of the product in the inventory.
     """
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    selling_unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    selling_unit_price = models.DecimalField(max_digits=20, decimal_places=2)
     stock = models.PositiveIntegerField()
 
     def __str__(self):
