@@ -1,5 +1,8 @@
 asgiref==3.7.2
+autopep8==2.0.4
 backports.zoneinfo==0.2.1
 Django==4.2.10
+pycodestyle==2.11.1
 sqlparse==0.4.4
+tomli==2.0.1
 typing-extensions==4.10.0

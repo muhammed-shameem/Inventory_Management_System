@@ -15,10 +15,26 @@ from .forms import InventorySearchForm, ProductForm, EditProductForm
 
 
 class LandingView(TemplateView):
+    """
+    View for rendering the landing page.
+    """
     template_name = 'landing_page.html'
 
 
 class CustomLoginView(LoginView):
+    """
+    Customized login view that redirects users based on their role after successful login.
+
+    Attributes:
+    - template_name: The HTML template for rendering the login page.
+
+    Methods:
+    - get_success_url: Overrides the default behavior to redirect users to different dashboards based on their role(admin or supplier).
+
+    Usage:
+    - Extends Django's built-in LoginView.
+    """
+    
     template_name = 'login.html'
 
     def get_success_url(self):
@@ -30,10 +46,32 @@ class CustomLoginView(LoginView):
 
 
 class CustomLogoutView(LogoutView):
+    """
+    Customized logout view that redirects users to the login page after successful logout.
+
+    Attributes:
+    - next_page: URL to redirect the user to after successful logout.
+
+    Usage:
+    - Extends Django's built-in LogoutView.
+    """
     next_page = reverse_lazy('login')
 
 
 class AdminDashboardView(AdminLoginMixin, TemplateView):
+    """
+    Admin dashboard view displaying the inventory list with search functionality.
+
+    Attributes:
+    - template_name: The HTML template for rendering the admin dashboard.
+
+    Methods:
+    - get_context_data: Overrides the method to include the inventory list and search query in the context.
+
+    Usage:
+    - Extends Django's TemplateView and uses the AdminLoginMixin for permission checks.
+    """
+    
     template_name = 'admin/admin_dashboard.html'
 
     def get_context_data(self, **kwargs):
@@ -52,6 +90,19 @@ class AdminDashboardView(AdminLoginMixin, TemplateView):
 
 
 class AdminDashboardProductsView(AdminLoginMixin, TemplateView):
+    """
+    Admin dashboard view displaying a list of products with search functionality.
+
+    Attributes:
+    - template_name: The HTML template for rendering the admin product list.
+
+    Methods:
+    - get_context_data: Overrides the method to include the product list and search query in the context.
+
+    Usage:
+    - Extends Django's TemplateView and uses the AdminLoginMixin for permission checks.
+    """
+    
     template_name = 'admin/admin_product_list.html'
 
     def get_context_data(self, **kwargs):
@@ -71,6 +122,19 @@ class AdminDashboardProductsView(AdminLoginMixin, TemplateView):
 
 
 class AdminDashboardSuppliersView(AdminLoginMixin, TemplateView):
+    """
+    Admin dashboard view displaying a list of suppliers with search functionality.
+
+    Attributes:
+    - template_name: The HTML template for rendering the admin suppliers list.
+
+    Methods:
+    - get_context_data: Overrides the method to include the suppliers list and search query in the context.
+
+    Usage:
+    - Extends Django's TemplateView and uses the AdminLoginMixin for permission checks.
+    """
+    
     template_name = 'admin/admin_suppliers.html'
 
     def get_context_data(self, **kwargs):
@@ -89,6 +153,19 @@ class AdminDashboardSuppliersView(AdminLoginMixin, TemplateView):
 
 
 class ProductPurchaseView(AdminLoginMixin, View):
+    """
+    Admin view for purchasing a product and updating inventory.
+
+    Attributes:
+    - template_name: The HTML template for rendering the product purchase page.
+
+    Methods:
+    - get: Handles GET requests to display the product information.
+    - post: Handles POST requests to process the product purchase and update inventory.
+
+    Usage:
+    - Extends Django's View and uses the AdminLoginMixin for permission checks.
+    """
     template_name = 'admin/purchase_product.html'
 
     def get(self, request, product_id):
@@ -139,6 +216,26 @@ class ProductPurchaseView(AdminLoginMixin, View):
 
 
 class AdminDashboardSupplierDetailView(AdminLoginMixin, TemplateView):
+    """
+    Admin dashboard view displaying details of a specific supplier and their associated products.
+
+    Attributes:
+    - template_name: The HTML template for rendering the admin supplier detail page.
+
+    Methods:
+    - get: Handles the HTTP GET request to retrieve and display details of the specified supplier.
+
+    Parameters:
+    - request: The HTTP request object.
+    - supplier_id: The ID of the supplier to retrieve details for.
+
+    Returns:
+    - HttpResponse: Rendered HTML page with supplier details and associated products.
+
+    Usage:
+    - Extends Django's TemplateView and uses the AdminLoginMixin for permission checks.
+    """
+    
     template_name = 'admin/admin_supplier_detail.html'
 
     def get(self, request, supplier_id):
@@ -151,6 +248,19 @@ class AdminDashboardSupplierDetailView(AdminLoginMixin, TemplateView):
 
 
 class InventoryReportView(AdminLoginMixin, TemplateView):
+    """
+    Admin dashboard view generating an inventory report with search and sorting functionality.
+
+    Attributes:
+    - template_name: The HTML template for rendering the admin inventory report.
+
+    Methods:
+    - get_context_data: Overrides the method to include the inventory report and search form in the context.
+
+    Usage:
+    - Extends Django's TemplateView and uses the AdminLoginMixin for permission checks.
+    """
+    
     template_name = 'admin/admin_inventory_report.html'
 
     def get_context_data(self, **kwargs):
@@ -197,6 +307,19 @@ class InventoryReportView(AdminLoginMixin, TemplateView):
 
 
 class SupplierDashboardView(SupplierLoginMixin, TemplateView):
+    """
+    Supplier dashboard view displaying a list of products with search functionality.
+
+    Attributes:
+    - template_name: The HTML template for rendering the supplier dashboard.
+
+    Methods:
+    - get_context_data: Overrides the method to include the products list and search query in the context.
+
+    Usage:
+    - Extends Django's TemplateView and uses the SupplierLoginMixin for permission checks.
+    """
+    
     template_name = 'supplier/supplier_dashboard.html'
 
     def get_context_data(self, **kwargs):
@@ -214,6 +337,22 @@ class SupplierDashboardView(SupplierLoginMixin, TemplateView):
 
 
 class AddProductView(SupplierLoginMixin, CreateView):
+    """
+    View for adding a new product to the supplier's inventory(Product Table).
+
+    Attributes:
+    - model: The model to use for creating the new product (Product).
+    - form_class: The form class to use for creating the new product (ProductForm).
+    - template_name: The HTML template for rendering the add product page.
+
+    Methods:
+    - form_valid: Overrides the method to associate the product with the logged-in supplier.
+    - get_success_url: Returns the URL to redirect to after successfully adding the product.
+
+    Usage:
+    - Extends Django's CreateView and uses the SupplierLoginMixin for permission checks.
+    """
+    
     model = Product
     form_class = ProductForm
     template_name = 'supplier/add_product.html'
@@ -232,6 +371,22 @@ class AddProductView(SupplierLoginMixin, CreateView):
 
 
 class EditProductView(SupplierLoginMixin, UpdateView):
+    """
+    View for editing an existing product in the supplier's inventory.
+
+    Attributes:
+    - model: The model to use for updating the product (Product).
+    - form_class: The form class to use for updating the product (EditProductForm).
+    - template_name: The HTML template for rendering the edit product page.
+    - success_url: The URL to redirect to after successfully updating the product (supplier_dashboard).
+
+    Methods:
+    - form_valid: Overrides the method to check if the logged-in supplier is authorized to edit the product.
+
+    Usage:
+    - Extends Django's UpdateView and uses the SupplierLoginMixin for permission checks.
+    """
+    
     model = Product
     form_class = EditProductForm
     template_name = 'supplier/edit_product.html'
@@ -245,6 +400,21 @@ class EditProductView(SupplierLoginMixin, UpdateView):
 
 
 class ProductDeleteView(DeleteView):
+    """
+    View for deleting an existing product from the supplier's inventory.
+
+    Attributes:
+    - model: The model to use for deleting the product (Product).
+    - template_name: The HTML template for rendering the delete product confirmation page.
+    - success_url: The URL to redirect to after successfully deleting the product (supplier_dashboard).
+
+    Methods:
+    - delete: Overrides the method to handle the deletion of the product and return a JsonResponse.
+
+    Usage:
+    - Extends Django's DeleteView.
+    """
+    
     model = Product
     template_name = 'supplier/edit_product.html'
     success_url = reverse_lazy('supplier_dashboard')
@@ -258,25 +428,3 @@ class ProductDeleteView(DeleteView):
         }
         return JsonResponse(response_data)
 
-
-def export_csv(request):
-
-    response = HttpResponse(content_type='text/csv')
-    response[
-        'Content-Disposition'] = 'attachment; filename="inventory_report.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow([
-        'Product Name', 'Supplier', 'Purchase Price', 'Selling Price',
-        'Quantity'
-    ])
-
-    queryset = Inventory.objects.all()
-    for inventory in queryset:
-        writer.writerow([
-            inventory.product.name, inventory.product.supplier.user.username,
-            inventory.product.unit_price, inventory.selling_unit_price,
-            inventory.stock
-        ])  # Adjust fields as needed
-
-    return response

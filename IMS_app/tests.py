@@ -1,9 +1,12 @@
-from django.test import TestCase
+from django.test import TestCase,Client
 from django.contrib.auth.models import User
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.urls import reverse,reverse_lazy
 from .models import Supplier,Product,Inventory
+from .helpers import create_user,create_supplier
+
 
 USERNAME = "Test Supplier"
 PASSWORD = 'testpassword'
@@ -194,3 +197,214 @@ class TestInventoryModel(TestCase):
                 stock=15
             )
 
+class CustomLoginViewTest(TestCase):
+    """
+    Test cases for the CustomLoginView.
+
+    Methods:
+    - setUp: Setup method to create test users for admin and supplier.
+
+    Test Cases:
+    - test_login_redirect_admin: Checks if the admin user is redirected to the admin dashboard.
+    - test_login_redirect_supplier: Checks if the supplier user is redirected to the supplier dashboard.
+    - test_login_invalid_credentials: Checks if login fails with invalid username or password.
+    """
+    
+    def setUp(self):
+        self.user = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        self.supplier = Supplier.objects.create(user=self.user, phone_number=PHONE_NUMBER,address=ADDRESS)
+        self.admin = User.objects.create_superuser(
+            username='admin', password='testpassword', email="admin@example.com")
+
+    def test_login_redirect_admin(self):
+        client = Client()
+        response = client.post(reverse('login'), {'username': self.admin.username, 'password': 'testpassword'})
+        self.assertEqual(response.status_code, 302) #success status code django template
+        self.assertRedirects(response, reverse('admin_dashboard'))
+
+    def test_login_redirect_supplier(self):
+        client = Client()
+        response = client.post(reverse('login'), {'username': self.supplier.user.username, 'password': PASSWORD})
+        self.assertEqual(response.status_code, 302)#success status code django template
+        self.assertRedirects(response, reverse('supplier_dashboard'))
+        
+    def test_login_invalid_credentials(self):
+        client = Client()
+        response = client.post(reverse('login'), {'username': 'invaliduser', 'password': 'invalidpassword'})
+        self.assertEqual(response.status_code, 200)#failure status code django template
+        self.assertTemplateUsed(response, 'login.html')
+        
+        
+class AdminDashboardViewTest(TestCase):
+    
+    """
+    Test cases for the AdminDashboardView.
+
+    Methods:
+    - setUp: Setup method to create test admin user and products with inventory.
+    - test_get_context_data_no_search: Checks if the context is correctly populated without search query.
+    - test_get_context_data_with_search: Checks if the context is correctly filtered with a search query.
+    - test_access_denied_for_non_admin: Checks if access is denied for non-admin users.
+    - test_unauthorized_access: Checks if access is denied for non-logged users.
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.admin = User.objects.create_superuser(
+            username='admin', password='testpassword', email="admin@example.com")
+        product1 = Product.objects.create(
+            supplier=create_supplier('user1','1234567'),
+            name="Product 1",
+            description="Product description 1",
+            unit_price=Decimal('10.00'),
+            stock=10,
+            active_status=True
+        )
+        Inventory.objects.create(product=product1, selling_unit_price=Decimal('12.00'), stock=5)
+
+        product2 = Product.objects.create(
+            supplier=create_supplier('user2','1234566787'),
+            name="Product 2",
+            description="Product description 2",
+            unit_price=Decimal('20.00'),
+            stock=20,
+            active_status=True
+        )
+        Inventory.objects.create(product=product2, selling_unit_price=Decimal('25.00'), stock=15)
+
+    def test_get_context_data_no_search(self):
+        self.client.login(username='admin', password='testpassword')
+        response = self.client.get(reverse_lazy('admin_dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['inventory_list']), 2)
+        self.assertEqual(response.context['search_query'], '')
+        self.client.logout()
+
+    def test_get_context_data_with_search(self):
+        self.client.login(username='admin', password='testpassword')
+        search_query = 'Product 1'
+        response = self.client.get(reverse_lazy('admin_dashboard'), {'search': search_query})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['inventory_list']), 1)
+        self.assertEqual(response.context['inventory_list'][0].product.name, search_query)
+        self.client.logout()
+        
+    def test_access_denied_for_non_admin(self):
+        user = User.objects.create_user('supplieruser', 'password', 'user@example.com')
+        self.client.login(username='supplieruser', password='password')
+        response = self.client.get(reverse_lazy('admin_dashboard'))
+        self.assertEqual(response.status_code, 403) 
+        self.client.logout() 
+    
+    def test_unauthorized_access(self):
+        response = self.client.get(reverse_lazy('admin_dashboard'))
+        self.assertEqual(response.status_code, 403)  
+        
+        
+        
+class SupplierDashboardViewTest(TestCase):
+    """
+    Test cases for the SupplierDashboardView.
+
+    Methods:
+    - setUp: Setup method to create a test supplier user and products.
+    - test_get_context_data_no_search: Checks if the context is correctly populated without a search query.
+    - test_get_context_data_with_search: Checks if the context is correctly filtered with a search query.
+    - test_access_denied_for_non_supplier: Checks if access is denied for non-supplier users.
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.supplier = create_supplier(username='supplieruser',phone_number="1233456787888")
+
+        product1 = Product.objects.create(
+            supplier=self.supplier,
+            name="Product 1",
+            description="Product description 1",
+            unit_price=10.00,
+            stock=10,
+            active_status=True
+        )
+
+        product2 = Product.objects.create(
+            supplier=self.supplier,
+            name="Product 2",
+            description="Product description 2",
+            unit_price=20.00,
+            stock=20,
+            active_status=True
+        )
+
+    def test_get_context_data_no_search(self):
+        self.client.login(username='supplieruser', password='supplierpass')
+        response = self.client.get(reverse_lazy('supplier_dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['products_list']), 2)
+        self.assertEqual(response.context['search_query'], '')
+        self.client.logout()
+
+    def test_get_context_data_with_search(self):
+        self.client.login(username='supplieruser', password='supplierpass')
+        search_query = 'Product 1'
+        response = self.client.get(reverse_lazy('supplier_dashboard'), {'search': search_query})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['products_list']), 1)
+        self.assertEqual(response.context['products_list'][0].name, search_query)
+        self.client.logout()
+        
+    def test_access_denied_for_non_supplier(self):
+        user = create_user(username='normaluser', password='user@example.com')
+        self.client.login(username='normaluser', password='user@example.com')
+        response = self.client.get(reverse_lazy('supplier_dashboard'))
+        self.assertEqual(response.status_code, 403) 
+        self.client.logout() 
+        
+class AddProductViewTest(TestCase):
+    
+    """
+    Test cases for the AddProductView.
+
+    Methods:
+    - setUp: Setup method to create test users.
+    - test_access_denied_for_anonymous_user: Checks if access is denied for an anonymous user.
+    - test_access_granted_for_logged_in_supplier: Checks if access is granted for a logged-in supplier.
+    - test_product_creation_success: Checks if a product is successfully created.
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.anonymous_user = create_user(username='anonymous', password='anonymous_password')
+        self.supplier = create_supplier(username='supplier1', phone_number='1234567890')
+
+    def test_access_denied_for_anonymous_user(self):
+        self.client.login(username='anonymous', password='anonymous_password')
+        response = self.client.get(reverse_lazy('add_product'))
+        self.assertEqual(response.status_code, 403)
+        self.client.logout()
+
+    def test_access_granted_for_logged_in_supplier(self):
+        self.client.login(username='supplier1', password='supplierpass')
+        response = self.client.get(reverse_lazy('add_product'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'supplier/add_product.html')
+
+    def test_product_creation_success(self):
+        self.client.login(username='supplier1', password='supplierpass')
+        data = {
+            'name': PRODUCT_NAME,
+            'description': PRODUCT_DESC,
+            'unit_price': UNIT_PRICE,
+            'stock':STOCK,
+        }
+        response = self.client.post(reverse_lazy('add_product'), data)
+        self.assertEqual(response.status_code, 302)
+
+        product = Product.objects.get(name=PRODUCT_NAME)
+        self.assertEqual(product.supplier, self.supplier)
+        self.assertEqual(product.name, data['name'])
+        self.assertEqual(product.description, data['description'])
+        self.assertEqual(product.unit_price, data['unit_price'])
+        self.assertEqual(product.stock, data['stock'])
+
+    def tearDown(self):
+        self.client.logout()
