@@ -16,6 +16,14 @@ class Supplier(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=20,unique=True)
     address = models.TextField()
+    
+    def clean(self):
+        if self.phone_number and len(self.phone_number)>20:
+            raise ValidationError({'phone_number': ['Phone number length must be less than or equal to 20.']})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.id} - {self.user.username}"
@@ -56,7 +64,7 @@ class Product(models.Model):
             raise ValidationError({'name': ['This is a required field']})
 
     def save(self, *args, **kwargs):
-        self.clean()  # Manually invoke the clean method
+        self.clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -73,7 +81,7 @@ class Inventory(models.Model):
         selling_unit_price (Decimal): The selling unit price of the product in the inventory.
         stock (int): The current stock quantity of the product in the inventory.
     """
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE)
     selling_unit_price = models.DecimalField(max_digits=20, decimal_places=2)
     stock = models.PositiveIntegerField()
 

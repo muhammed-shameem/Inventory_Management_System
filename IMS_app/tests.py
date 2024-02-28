@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from decimal import Decimal
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from .models import Supplier,Product
 
 USERNAME = "Test Supplier"
@@ -26,6 +27,7 @@ class TestSupplierModel(TestCase):
     
     def setUp(self):
         self.user = User.objects.create(username=USERNAME, password=PASSWORD)
+        self.different_user = User.objects.create(username='DifferentUser', password='password')
         self.supplier = Supplier.objects.create(
             user=self.user,
             phone_number=PHONE_NUMBER,
@@ -38,25 +40,24 @@ class TestSupplierModel(TestCase):
         self.assertEqual(self.supplier.address, ADDRESS)
 
     def test_unique_user_is_enforced(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(IntegrityError):
             Supplier.objects.create(
                 user=self.user,
                 phone_number="987-654-3210",
                 address="Another Address"
             )
     def test_unique_phone_number(self):
-        different_user = User.objects.create(username='DifferentUser', password='password')
-        with self.assertRaises(Exception):
+        with self.assertRaises(IntegrityError):
             Supplier.objects.create(
-                user=different_user,
+                user=self.different_user,
                 phone_number=PHONE_NUMBER,
                 address="Address"
             )
     def test_phone_number_length(self):
         invalid_phone_number = "12345678901234567890123" 
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValidationError):
             Supplier.objects.create(
-                user=self.user,
+                user=self.different_user,
                 phone_number=invalid_phone_number,
                 address="Address"
             )
@@ -96,7 +97,7 @@ class TestProductModel(TestCase):
         self.assertTrue(product.active_status)
 
     def test_name_required(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValidationError):
             Product.objects.create(
                 supplier=self.supplier,
                 description=PRODUCT_DESC,
@@ -106,7 +107,7 @@ class TestProductModel(TestCase):
             )
 
     def test_negative_unit_price(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValidationError):
             Product.objects.create(
                 supplier=self.supplier,
                 name=PRODUCT_NAME,
@@ -117,7 +118,7 @@ class TestProductModel(TestCase):
             )
 
     def test_negative_stock_quantity(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(IntegrityError):
             Product.objects.create(
                 supplier=self.supplier,
                 name=PRODUCT_NAME,
