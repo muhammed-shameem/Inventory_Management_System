@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse,HttpResponseForbidden
 from .models import Inventory, Product, Supplier
 from .mixins import AdminLoginMixin, SupplierLoginMixin
 from .forms import InventorySearchForm, ProductForm, EditProductForm
